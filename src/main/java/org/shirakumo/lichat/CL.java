@@ -93,6 +93,8 @@ public class CL{
             return true;
         }else if(type.equals("NIL")){
             return false;
+        }else if(type.equals("NULL")){
+            return (object == null);
         }else if(type.equals("BOOLEAN")){
             return (object == null);
         }else if(object instanceof StandardObject){

@@ -11,7 +11,7 @@ public class InputStream{
         try{
             reader = new InputStreamReader(is, "utf8");
         }catch(Exception ex){
-            CL.error("Your system doesn't support UTF-8.");
+            CL.error("ENCODING-UNSUPPORTED", "Your system doesn't support UTF-8.");
         }
         this.reader = reader;
     }
