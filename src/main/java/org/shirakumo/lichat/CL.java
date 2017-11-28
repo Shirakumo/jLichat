@@ -1,64 +1,74 @@
 package org.shirakumo.lichat;
 import java.util.*;
+import java.util.function.*;
 
 public class CL{
-    private final Map<String, Package> packages;
-    private final Map<String, StandardClass> classes;
+    private static final Map<String, Package> packages;
+    private static final Map<Symbol, StandardClass> classes;
+    public static Package PACKAGE;
 
-    public CL(){
+    static{
         packages = new HashMap<String, Package>();
-        classes = new HashMap<String, StandardClass>();
-        makePackage("LICHAT-PROTOCOL");
+        classes = new HashMap<Symbol, StandardClass>();
+        PACKAGE = makePackage("LICHAT-PROTOCOL");
         makePackage("KEYWORD");
     }
 
-    public Symbol makeSymbol(string name){
-        return new Symbol(name);
+    public static Symbol makeSymbol(String name){
+        return new Symbol(null, name);
     }
 
-    public Symbol intern(String name, Package pkg){
+    public static Symbol intern(String name){
+        return intern(name, PACKAGE);
+    }
+
+    public static Symbol intern(String name, Package pkg){
         return pkg.intern(name);
     }
 
-    public Symbol intern(String name, String pkg){
+    public static Symbol intern(String name, String pkg){
         return packages.get(pkg).intern(name);
     }
 
-    public Symbol findSymbol(String name, Package pkg){
+    public static Symbol findSymbol(String name){
+        return findSymbol(name, PACKAGE);
+    }
+
+    public static Symbol findSymbol(String name, Package pkg){
         return pkg.findSymbol(name);
     }
 
-    public Symbol findSymbol(String name, String pkg){
+    public static Symbol findSymbol(String name, String pkg){
         return packages.get(pkg).intern(name);
     }
 
-    public Package findPackage(String name){
+    public static Package findPackage(String name){
         return packages.get(name);
     }
 
-    public Package makePackage(String name){
+    public static Package makePackage(String name){
         if(packages.get(name) != null)
-            throw new SimpleError("A package with the name "+name+" already exists");
+            error("PACKAGE-ALREADY-EXISTS", "A package with the name "+name+" already exists");
         Package pkg = new Package(name);
         packages.put(name, pkg);
         return pkg;
     }
 
-    public StandardClass defclass(String name, List<String> directSuperclasses, Map<String, Function<Object>> initforms){
+    public static StandardClass defclass(Symbol name, List<Symbol> directSuperclasses, Map<String, Supplier<Object>> initforms){
         if(directSuperclasses == null){
-            directSuperclasses = new ArrayList<String>();
-            directSuperclasses.add("StandardObject");
+            directSuperclasses = new ArrayList<Symbol>();
+            directSuperclasses.add(findSymbol("STANDARD-OBJECT"));
         }
         List<StandardClass> classes = new ArrayList<StandardClass>();
-        for(String name : directSuperclasses){
-            classes.put(findClass(name));
+        for(Symbol s : directSuperclasses){
+            classes.add(findClass(s));
         }
         StandardClass clas = new StandardClass(name, classes, initforms);
-        this.classes.put(name, clas);
+        CL.classes.put(name, clas);
         return clas;
     }
 
-    public StandardObject makeInstance(String name, Object... initargs){
+    public static StandardObject makeInstance(Symbol name, Object... initargs){
         Map<String, Object> argmap = new HashMap<String, Object>();
         for(int i=0; i<initargs.length; i+=2){
             argmap.put((String)initargs[i], initargs[i+1]);
@@ -66,30 +76,30 @@ public class CL{
         return new StandardObject(findClass(name), argmap);
     }
 
-    public StandardClass findClass(String name){
+    public static StandardClass findClass(Symbol name){
         StandardClass clas = classes.get(name);
-        if(clas == null) throw new SimpleError("No such class "+name+".");
+        if(clas == null) CL.error("NO-SUCH-CLASS", "No such class "+name+".");
         return clas;
     }
 
-    public StandardClass classOf(StandardObject object){
+    public static StandardClass classOf(StandardObject object){
         return object.clas;
     }
 
-    public boolean typep(Object object, String type){
+    public static boolean typep(Object object, String type){
         if(type == null){
             return false;
-        }else if(type.equal("T")){
+        }else if(type.equals("T")){
             return true;
-        }else if(type.equal("NIL")){
+        }else if(type.equals("NIL")){
             return false;
-        }else if(type.equal("BOOLEAN")){
+        }else if(type.equals("BOOLEAN")){
             return (object == null);
         }else if(object instanceof StandardObject){
-            if(classOf(object).name.equals(type)){
+            if(classOf((StandardObject)object).name.equals(type)){
                 return true;
             }else{
-                for(StandardClass c : classOf(object).superclasses){
+                for(StandardClass c : classOf((StandardObject)object).superclasses){
                     if(c.name.equals(type)){
                         return true;
                     }
@@ -97,37 +107,50 @@ public class CL{
                 return false;
             }
         }else{
-            return Class.forName(type).isInstance(object);
+            try{
+                return Class.forName(type).isInstance(object);
+            }catch(ClassNotFoundException ex){
+                return false;
+            }
         }
     }
 
-    private static final long universalUnixOffset = 2208988800;
-
-    public long getUniversalTime(){
-        return Date.getTime()/1000 + universalUnixOffset;
+    public static void error(String type){
+        throw new Condition(type);
     }
 
-    public long universalToUnix(long universal){
+    public static void error(String type, String message){
+        throw new Condition(type, message);
+    }
+
+    private static final long universalUnixOffset = 2208988800L;
+
+    public static long getUniversalTime(){
+        return (new Date().getTime())/1000 + universalUnixOffset;
+    }
+
+    public static long universalToUnix(long universal){
         return universal - universalUnixOffset;
     }
 }
 
 class StandardClass{
-    public final String name;
+    public final Symbol name;
     public final List<StandardClass> directSuperclasses;
     public final List<StandardClass> superclasses;
-    public final Map<String, Function<Object>> initforms;
+    public final Map<String, Supplier<Object>> initforms;
 
-    StandardClass(String name, List<StandardClass> directSuperclasses){
+    StandardClass(Symbol name, List<StandardClass> directSuperclasses, Map<String, Supplier<Object>> initforms){
         this.name = name;
         this.directSuperclasses = new ArrayList<StandardClass>();
         this.directSuperclasses.addAll(directSuperclasses);
         this.superclasses = computeClassPrecedenceList();
-        this.initforms = new HashMap<String, Function<Object>>();
+        this.initforms = new HashMap<String, Supplier<Object>>();
+        this.initforms.putAll(initforms);
     }
 
-    private Function<StandardClass, Void> mapper;
-    private Function<StandardClass, Void> tarjan;
+    private Consumer<StandardClass> mapper;
+    private Consumer<StandardClass> tarjan;
     private List<StandardClass> computeClassPrecedenceList(){
         Map<StandardClass, Integer> nodes = new HashMap<StandardClass, Integer>();
         Map<StandardClass, List<StandardClass>> edges = new HashMap<StandardClass, List<StandardClass>>();
@@ -139,19 +162,19 @@ class StandardClass{
             for(StandardClass s : c.directSuperclasses){
                 if(edges.get(prev) == null) edges.put(prev, new ArrayList<StandardClass>());
                 if(!edges.get(prev).contains(s)) edges.get(prev).add(s);
-                mapper(s);
+                mapper.accept(s);
                 prev = s;
             }
         };
-        mapper(this);
+        mapper.accept(this);
 
         tarjan = (c) -> {
             if(nodes.get(c) == 1){
-                throw new SimpleError("Dependency cycle detected.");
+                CL.error("DEPENDENCY-CYCLE", "The superclasses have a cycle.");
             }
             nodes.put(c, 1);
             for(StandardClass t : edges.get(c)){
-                tarjan(t);
+                tarjan.accept(t);
             }
             nodes.remove(c);
             sorted.add(c);
@@ -160,7 +183,7 @@ class StandardClass{
             Set<StandardClass> keys = nodes.keySet();
             if(keys.isEmpty()) break;
             for(StandardClass c : keys){
-                tarjan(c);
+                tarjan.accept(c);
                 break;
             }
         }
@@ -171,7 +194,7 @@ class StandardClass{
     public StandardObject initialize(StandardObject object){
         for(String slot : initforms.keySet()){
             if(!object.slots.containsKey(slot)){
-                object.s(slot, initforms.get(slot)());
+                object.s(slot, initforms.get(slot).get());
             }
         }
         for(StandardClass s : directSuperclasses){
@@ -185,7 +208,7 @@ class StandardObject{
     public final StandardClass clas;
     public final Map<String, Object> slots;
 
-    public StandardObject(StandardClass clas, HashMap<String, Object> initargs){
+    public StandardObject(StandardClass clas, Map<String, Object> initargs){
         this.clas = clas;
         this.slots = new HashMap<String, Object>();
         slots.putAll(initargs);
@@ -202,19 +225,22 @@ class StandardObject{
     }
 }
 
-class Condition extends Throwable{
-    public String report(){
-        return "[Condition of type "+this.class.className()+"]";
-    }
-}
-
-class Error extends Condition{}
-
-class SimpleError extends Error{
+class Condition extends RuntimeException{
     private final String message;
+    private final String type;
+
+    public Condition(String type){
+        this.type = type;
+        this.message = this.toString();
+    }
     
-    public SimpleError(String message){
+    public Condition(String type, String message){
+        this.type = type;
         this.message = message;
+    }
+
+    public String toString(){
+        return "[Condition of type "+getClass().getName()+"]";
     }
 
     public String report(){
