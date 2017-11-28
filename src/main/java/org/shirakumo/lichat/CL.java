@@ -3,6 +3,8 @@ import java.util.*;
 import java.util.function.*;
 
 public class CL{
+    public static final String LICHAT_VERSION = "1.3";
+    
     private static final Map<String, Package> packages;
     private static final Map<Symbol, StandardClass> classes;
     public static Package PACKAGE;
@@ -12,6 +14,134 @@ public class CL{
         classes = new HashMap<Symbol, StandardClass>();
         PACKAGE = makePackage("LICHAT-PROTOCOL");
         makePackage("KEYWORD");
+
+        for(String name : new String[]{"ID","CLOCK","FROM","PASSWORD","VERSION","EXTENSIONS","CHANNEL","TARGET","TEXT","PERMISSIONS","USERS","CHANNELS","REGISTERED","CONNECTIONS","UPDATE-ID","COMPATIBLE-VERSIONS","CONTENT-TYPE","FILENAME","PAYLOAD","ALLOWED-CONTENT-TYPES"}){
+            intern(name, "KEYWORD");
+        }
+
+        for(String name : new String[]{"WIRE-OBJECT","UPDATE","PING","PONG","CONNECT","DISCONNECT","REGISTER","CHANNEL-UPDATE","TARGET-UPDATE","TEXT-UPDATE","JOIN","LEAVE","CREATE","KICK","PULL","PERMISSIONS","MESSAGE","USERS","CHANNELS","USER-INFO","BACKFILL","DATA","FAILURE","MALFORMED-UPDATE","UPDATE-TOO-LONG","CONNECTION-UNSTABLE","TOO-MANY-CONNECTIONS","UPDATE-FAILURE","INVALID-UPDATE","USERNAME-MISMATCH","INCOMPATIBLE-VERSION","INVALID-PASSWORD","NO-SUCH-PROFILE","USERNAME-TAKEN","NO-SUCH-CHANNEL","ALREADY-IN-CHANNEL","NOT-IN-CHANNEL","CHANNELNAME-TAKEN","BAD-NAME","INSUFFICIENT-PERMISSIONS","INVALID-PERMISSIONS","NO-SUCH-USER","TOO-MANY-UPDATES","BAD-CONTENT-TYPE","NIL","T"}){
+            intern(name, "LICHAT-PROTOCOL");
+        }
+
+        defclass("WIRE-OBJECT", new String[]{});
+        
+        defclass("UPDATE", new String[]{"WIRE-OBJECT"},
+                 "clock", (Supplier) ()->{return CL.getUniversalTime();},
+                 "id", (Supplier) ()->{return nextId();},
+                 "from", requiredArg("from"));
+        
+        defclass("PING", new String[]{"UPDATE"});
+        
+        defclass("PONG", new String[]{"UPDATE"});
+
+        defclass("CONNECT", new String[]{"UPDATE"},
+                 "password", (Supplier) ()->{return null;},
+                 "version", (Supplier) ()->{return LICHAT_VERSION;},
+                 "extensions", (Supplier) ()->{return new String[]{};});
+
+        defclass("DISCONNECT", new String[]{"UPDATE"});
+
+        defclass("REGISTER", new String[]{"UPDATE"},
+                 "password", requiredArg("password"));
+
+        defclass("CHANNEL-UPDATE", new String[]{"UPDATE"},
+                 "channel", requiredArg("channel"));
+
+        defclass("TARGET-UDPATE", new String[]{"UPDATE"},
+                 "target", requiredArg("target"));
+
+        defclass("TEXT-UPDATE", new String[]{"UPDATE"},
+                 "text", requiredArg("text"));
+
+        defclass("JOIN", new String[]{"CHANNEL-UPDATE"});
+
+        defclass("LEAVE", new String[]{"CHANNEL-UPDATE"});
+        
+        defclass("CREATE", new String[]{"CHANNEL-UPDATE"},
+                 "channel", (Supplier) ()->{return null;});
+
+        defclass("KICK", new String[]{"CHANNEL-UPDATE", "TARGET-UPDATE"});
+        
+        defclass("PULL", new String[]{"CHANNEL-UPDATE", "TARGET-UPDATE"});
+
+        defclass("PERMISSIONS", new String[]{"CHANNEL-UPDATE"},
+                 "permissions", (Supplier) ()->{return new ArrayList();});
+
+        defclass("MESSAGE", new String[]{"CHANNEL-UPDATE"});
+
+        defclass("USERS", new String[]{"CHANNEL-UPDATE"},
+                 "users", (Supplier) ()->{return new ArrayList();});
+
+        defclass("CHANNELS", new String[]{"UPDATE"},
+                 "channels", (Supplier) ()->{return new ArrayList();});
+
+        defclass("USER-INFO", new String[]{"TARGET-UPDATE"},
+                 "registered", (Supplier) ()->{return false;},
+                 "connections", (Supplier) ()->{return 1;});
+
+        defclass("BACKFILL", new String[]{"CHANNEL-UPDATE"});
+
+        defclass("DATA", new String[]{"CHANNEL-UPDATE"},
+                 "content-type", requiredArg("content-type"),
+                 "filename", (Supplier) ()->{return null;},
+                 "payload", requiredArg("payload"));
+
+        defclass("FAILURE", new String[]{"TEXT-UPDATE"});
+
+        defclass("MALFORMED-UPDATE", new String[]{"FAILURE"});
+
+        defclass("UPDATE-TOO-LONG", new String[]{"FAILURE"});
+
+        defclass("CONNECTION-UNSTABLE", new String[]{"FAILURE"});
+
+        defclass("TOO-MANY-CONNECTIONS", new String[]{"FAILURE"});
+
+        defclass("UPDATE-FAILURE", new String[]{"FAILURE"},
+                 "update-id", requiredArg("update-id"));
+
+        defclass("INVALID-UPDATE", new String[]{"UPDATE-FAILURE"});
+
+        defclass("USERNAME-MISMATCH", new String[]{"UPDATE-FAILURE"});
+
+        defclass("INCOMPATIBLE-VERSION", new String[]{"UPDATE-FAILURE"},
+                 "compatible-versions", requiredArg("compatible-versions"));
+
+        defclass("INVALID-PASSWORD", new String[]{"UPDATE-FAILURE"});
+
+        defclass("NO-SUCH-PROFILE", new String[]{"UPDATE-FAILURE"});
+
+        defclass("USERNAME-TAKEN", new String[]{"UPDATE-FAILURE"});
+
+        defclass("NO-SUCH-CHANNEL", new String[]{"UPDATE-FAILURE"});
+
+        defclass("ALREADY-IN-CHANNEL", new String[]{"UPDATE-FAILURE"});
+
+        defclass("NOT-IN-CHANNEL", new String[]{"UPDATE-FAILURE"});
+
+        defclass("CHANNELNAME-TAKEN", new String[]{"UPDATE-FAILURE"});
+
+        defclass("BAD-NAME", new String[]{"UPDATE-FAILURE"});
+
+        defclass("INSUFFICIENT-PERMISSIONS", new String[]{"UPDATE-FAILURE"});
+
+        defclass("NO-SUCH-USER", new String[]{"UPDATE-FAILURE"});
+
+        defclass("TOO-MANY-UPDATES", new String[]{"UPDATE-FAILURE"});
+
+        defclass("BAD-CONTENT-TYPE", new String[]{"UPDATE-FAILURE"},
+                 "allowed-content-types", requiredArg("allowed-content-types"));
+        
+    }
+
+    private static int IdCounter = 0;
+    public static int nextId(){
+        return IdCounter++;
+    }
+
+    private static Supplier requiredArg(String name){
+        return (Supplier) ()->{
+            return CL.error("MISSING-INITARG", "Missing "+name+" field.");
+        };
     }
 
     public static Symbol makeSymbol(String name){
@@ -52,6 +182,18 @@ public class CL{
         Package pkg = new Package(name);
         packages.put(name, pkg);
         return pkg;
+    }
+
+    public static StandardClass defclass(String name, String[] directSuperclasses, Object... initforms){
+        List<Symbol> classes = new ArrayList<Symbol>();
+        for(String clas : directSuperclasses){
+            classes.add(findSymbol(clas));
+        }
+        Map<String, Supplier<Object>> inits = new HashMap<String, Supplier<Object>>();
+        for(int i=0; i<initforms.length; i+= 2){
+            inits.put((String)initforms[i], (Supplier<Object>)initforms[i+1]);
+        }
+        return defclass(findSymbol(name), classes, inits);
     }
 
     public static StandardClass defclass(Symbol name, List<Symbol> directSuperclasses, Map<String, Supplier<Object>> initforms){
@@ -117,11 +259,11 @@ public class CL{
         }
     }
 
-    public static void error(String type){
+    public static Condition error(String type){
         throw new Condition(type);
     }
 
-    public static void error(String type, String message){
+    public static Condition error(String type, String message){
         throw new Condition(type, message);
     }
 
