@@ -5,7 +5,7 @@ import java.util.*;
 public class TextUpdate extends Update{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("TEXT-UPDATE");
+        className = CL.intern("TEXT-UPDATE");
         CL.registerClass(className, TextUpdate.class);
     }
 

@@ -5,7 +5,7 @@ import java.util.*;
 public class Permissions extends ChannelUpdate{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("PERMISSIONS");
+        className = CL.intern("PERMISSIONS");
         CL.registerClass(className, Permissions.class);
     }
 

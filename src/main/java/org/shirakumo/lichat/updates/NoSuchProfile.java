@@ -5,7 +5,7 @@ import java.util.*;
 public class NoSuchProfile extends UpdateFailure{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("NO-SUCH-PROFILE");
+        className = CL.intern("NO-SUCH-PROFILE");
         CL.registerClass(className, NoSuchProfile.class);
     }
 

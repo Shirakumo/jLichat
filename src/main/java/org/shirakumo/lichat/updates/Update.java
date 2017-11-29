@@ -5,7 +5,7 @@ import java.util.*;
 public class Update extends StandardObject{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("UPDATE");
+        className = CL.intern("UPDATE");
         CL.registerClass(className, Update.class);
     }
 

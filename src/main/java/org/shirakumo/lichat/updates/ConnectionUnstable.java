@@ -5,7 +5,7 @@ import java.util.*;
 public class ConnectionUnstable extends Failure{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("CONNECTION-UNSTABLE");
+        className = CL.intern("CONNECTION-UNSTABLE");
         CL.registerClass(className, ConnectionUnstable.class);
     }
 

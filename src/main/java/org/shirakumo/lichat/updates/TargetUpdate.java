@@ -5,7 +5,7 @@ import java.util.*;
 public class TargetUpdate extends Update{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("TARGET-UPDATE");
+        className = CL.intern("TARGET-UPDATE");
         CL.registerClass(className, TargetUpdate.class);
     }
 

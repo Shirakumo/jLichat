@@ -5,7 +5,7 @@ import java.util.*;
 public class Failure extends TextUpdate{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("FAILURE");
+        className = CL.intern("FAILURE");
         CL.registerClass(className, Failure.class);
     }
 

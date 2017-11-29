@@ -5,7 +5,7 @@ import java.util.*;
 public class Pong extends Update{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("PONG");
+        className = CL.intern("PONG");
         CL.registerClass(className, Pong.class);
     }
 

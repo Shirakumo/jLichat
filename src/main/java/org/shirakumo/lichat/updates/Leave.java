@@ -5,7 +5,7 @@ import java.util.*;
 public class Leave extends ChannelUpdate{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("LEAVE");
+        className = CL.intern("LEAVE");
         CL.registerClass(className, Leave.class);
     }
 

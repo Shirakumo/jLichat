@@ -5,7 +5,7 @@ import java.util.*;
 public class TooManyUpdates extends UpdateFailure{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("TOO-MANY-UPDATES");
+        className = CL.intern("TOO-MANY-UPDATES");
         CL.registerClass(className, TooManyUpdates.class);
     }
 

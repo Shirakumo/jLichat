@@ -5,7 +5,7 @@ import java.util.*;
 public class NotInChannel extends UpdateFailure{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("NOT-IN-CHANNEL");
+        className = CL.intern("NOT-IN-CHANNEL");
         CL.registerClass(className, NotInChannel.class);
     }
 

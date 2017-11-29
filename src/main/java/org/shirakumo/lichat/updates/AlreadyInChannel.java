@@ -5,7 +5,7 @@ import java.util.*;
 public class AlreadyInChannel extends UpdateFailure{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("ALREADY-IN-CHANNEL");
+        className = CL.intern("ALREADY-IN-CHANNEL");
         CL.registerClass(className, AlreadyInChannel.class);
     }
 

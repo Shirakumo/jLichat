@@ -5,7 +5,7 @@ import java.util.*;
 public class Data extends ChannelUpdate{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("DATA");
+        className = CL.intern("DATA");
         CL.registerClass(className, Data.class);
     }
 

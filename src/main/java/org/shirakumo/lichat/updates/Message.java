@@ -5,12 +5,14 @@ import java.util.*;
 public class Message extends ChannelUpdate{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("MESSAGE");
+        className = CL.intern("MESSAGE");
         CL.registerClass(className, Message.class);
     }
 
+    public final String text;
+
     public Message(Map<String, Object> initargs){
         super(initargs);
-        
+        text = (String)CL.requiredArg(initargs, "text");
     }
 }

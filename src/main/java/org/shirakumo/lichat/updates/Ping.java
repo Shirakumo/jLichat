@@ -5,7 +5,7 @@ import java.util.*;
 public class Ping extends Update{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("PING");
+        className = CL.intern("PING");
         CL.registerClass(className, Ping.class);
     }
 

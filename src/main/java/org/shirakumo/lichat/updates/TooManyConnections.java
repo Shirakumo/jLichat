@@ -5,7 +5,7 @@ import java.util.*;
 public class TooManyConnections extends Failure{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("TOO-MANY-CONNECTIONS");
+        className = CL.intern("TOO-MANY-CONNECTIONS");
         CL.registerClass(className, TooManyConnections.class);
     }
 

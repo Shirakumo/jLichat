@@ -5,7 +5,7 @@ import java.util.*;
 public class InvalidUpdate extends UpdateFailure{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("INVALID-UPDATE");
+        className = CL.intern("INVALID-UPDATE");
         CL.registerClass(className, InvalidUpdate.class);
     }
 

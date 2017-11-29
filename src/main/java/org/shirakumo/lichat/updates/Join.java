@@ -5,7 +5,7 @@ import java.util.*;
 public class Join extends ChannelUpdate{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("JOIN");
+        className = CL.intern("JOIN");
         CL.registerClass(className, Join.class);
     }
 

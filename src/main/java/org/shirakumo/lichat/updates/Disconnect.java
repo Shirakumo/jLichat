@@ -5,7 +5,7 @@ import java.util.*;
 public class Disconnect extends Update{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("DISCONNECT");
+        className = CL.intern("DISCONNECT");
         CL.registerClass(className, Disconnect.class);
     }
 

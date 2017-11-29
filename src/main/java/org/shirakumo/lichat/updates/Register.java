@@ -5,7 +5,7 @@ import java.util.*;
 public class Register extends Update{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("REGISTER");
+        className = CL.intern("REGISTER");
         CL.registerClass(className, Register.class);
     }
 

@@ -5,7 +5,7 @@ import java.util.*;
 public class InvalidPermissions extends UpdateFailure{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("INVALID-PERMISSIONS");
+        className = CL.intern("INVALID-PERMISSIONS");
         CL.registerClass(className, InvalidPermissions.class);
     }
 

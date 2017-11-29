@@ -5,7 +5,7 @@ import java.util.*;
 public class UsernameMismatch extends UpdateFailure{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("USERNAME-MISMATCH");
+        className = CL.intern("USERNAME-MISMATCH");
         CL.registerClass(className, UsernameMismatch.class);
     }
 

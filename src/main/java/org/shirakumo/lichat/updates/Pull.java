@@ -5,12 +5,14 @@ import java.util.*;
 public class Pull extends ChannelUpdate{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("PULL");
+        className = CL.intern("PULL");
         CL.registerClass(className, Pull.class);
     }
 
+    public final String target;
+
     public Pull(Map<String, Object> initargs){
         super(initargs);
-        
+        target = (String)CL.requiredArg(initargs, "target");
     }
 }

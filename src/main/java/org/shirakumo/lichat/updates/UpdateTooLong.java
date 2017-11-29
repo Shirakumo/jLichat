@@ -5,7 +5,7 @@ import java.util.*;
 public class UpdateTooLong extends Failure{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("UPDATE-TOO-LONG");
+        className = CL.intern("UPDATE-TOO-LONG");
         CL.registerClass(className, UpdateTooLong.class);
     }
 

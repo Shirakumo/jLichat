@@ -5,7 +5,7 @@ import java.util.*;
 public class InsufficientPermissions extends UpdateFailure{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("INSUFFICIENT-PERMISSIONS");
+        className = CL.intern("INSUFFICIENT-PERMISSIONS");
         CL.registerClass(className, InsufficientPermissions.class);
     }
 

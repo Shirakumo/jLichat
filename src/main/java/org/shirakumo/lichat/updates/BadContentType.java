@@ -5,7 +5,7 @@ import java.util.*;
 public class BadContentType extends UpdateFailure{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("BAD-CONTENT-TYPE");
+        className = CL.intern("BAD-CONTENT-TYPE");
         CL.registerClass(className, BadContentType.class);
     }
 

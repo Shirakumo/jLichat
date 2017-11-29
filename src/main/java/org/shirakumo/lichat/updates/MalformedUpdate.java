@@ -5,7 +5,7 @@ import java.util.*;
 public class MalformedUpdate extends Failure{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("MALFORMED-UPDATE");
+        className = CL.intern("MALFORMED-UPDATE");
         CL.registerClass(className, MalformedUpdate.class);
     }
 

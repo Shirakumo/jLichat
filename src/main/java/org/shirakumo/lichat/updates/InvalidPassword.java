@@ -5,7 +5,7 @@ import java.util.*;
 public class InvalidPassword extends UpdateFailure{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("INVALID-PASSWORD");
+        className = CL.intern("INVALID-PASSWORD");
         CL.registerClass(className, InvalidPassword.class);
     }
 

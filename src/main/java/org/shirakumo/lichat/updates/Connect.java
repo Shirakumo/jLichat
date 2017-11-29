@@ -5,7 +5,7 @@ import java.util.*;
 public class Connect extends Update{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("CONNECT");
+        className = CL.intern("CONNECT");
         CL.registerClass(className, Connect.class);
     }
 

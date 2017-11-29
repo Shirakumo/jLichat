@@ -5,7 +5,7 @@ import java.util.*;
 public class ChannelnameTaken extends UpdateFailure{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("CHANNELNAME-TAKEN");
+        className = CL.intern("CHANNELNAME-TAKEN");
         CL.registerClass(className, ChannelnameTaken.class);
     }
 

@@ -5,7 +5,7 @@ import java.util.*;
 public class UpdateFailure extends Failure{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("UPDATE-FAILURE");
+        className = CL.intern("UPDATE-FAILURE");
         CL.registerClass(className, UpdateFailure.class);
     }
 

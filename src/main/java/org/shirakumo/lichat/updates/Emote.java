@@ -5,7 +5,7 @@ import java.util.*;
 public class Emote extends Update{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("EMOTE");
+        className = CL.intern("EMOTE");
         CL.registerClass(className, Emote.class);
     }
 

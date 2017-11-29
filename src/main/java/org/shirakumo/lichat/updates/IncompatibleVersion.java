@@ -5,7 +5,7 @@ import java.util.*;
 public class IncompatibleVersion extends UpdateFailure{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("INCOMPATIBLE-VERSION");
+        className = CL.intern("INCOMPATIBLE-VERSION");
         CL.registerClass(className, IncompatibleVersion.class);
     }
 
