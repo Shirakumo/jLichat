@@ -100,10 +100,10 @@ public class Printer{
         if(CL.typep(object, "WIRE-OBJECT")){
             StandardObject wireable = (StandardObject)object;
             List<Object> list = new ArrayList<Object>();
-            list.add(wireable.clas.name);
-            for(String slot : wireable.slots.keySet()){
+            list.add(wireable.className);
+            for(String slot : CL.classSlots(wireable.getClass())){
                 list.add(CL.findSymbol(slot.toUpperCase(), "KEYWORD"));
-                list.add(wireable.g(slot));
+                list.add(CL.slotValue(wireable, slot));
             }
             printSexpr(list);
         }else{
