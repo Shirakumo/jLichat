@@ -103,7 +103,8 @@ public class CL{
     public static List<String> classSlots(Class<? extends StandardObject> clas){
         List<String> slots = new ArrayList<String>();
         for(java.lang.reflect.Field field : clas.getFields()){
-            slots.add(field.getName());
+            if(!java.lang.reflect.Modifier.isStatic(field.getModifiers()))
+                slots.add(field.getName());
         }
         return slots;
     }
