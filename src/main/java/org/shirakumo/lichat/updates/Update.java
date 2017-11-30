@@ -20,11 +20,6 @@ public class Update extends StandardObject{
         from = (String)CL.requiredArg(initargs, "from");
     }
 
-    private static int IdCounter = 0;
-    public static int nextId(){
-        return IdCounter++;
-    }
-
     public String toString(){
         return "#<"+className+" FROM "+from+" ID "+id+">";
     }

@@ -4,7 +4,7 @@ import java.util.*;
 import java.io.*;
 import java.net.*;
 
-public class Client implements Runnable{
+public class Client extends HandlerAdapter implements Runnable{
     public static final String LICHAT_VERSION = "1.3";
     public static final int DEFAULT_PORT = 1111;
     public static final List<String> EXTENSIONS = Arrays.asList(new String[]{
@@ -28,6 +28,7 @@ public class Client implements Runnable{
     private Printer printer;
     private Thread thread;
     private long lastReceived = 0;
+    private int IdCounter = 0;
     
     public Client(){
     }
@@ -103,7 +104,7 @@ public class Client implements Runnable{
         if(!argmap.containsKey("clock"))
             argmap.put("clock", CL.getUniversalTime());
         if(!argmap.containsKey("id"))
-            argmap.put("id", Update.nextId());
+            argmap.put("id", nextId());
         if(!argmap.containsKey("from"))
             argmap.put("from", username);
 
@@ -112,6 +113,10 @@ public class Client implements Runnable{
         StandardObject update = CL.makeInstance(CL.findClass(name), argmap);
         send(update);
         return update;
+    }
+    
+    public int nextId(){
+        return IdCounter++;
     }
 
     public void run(){
@@ -150,10 +155,15 @@ public class Client implements Runnable{
     }
 
     public void process(Update update){
-        List<Handler> cbs = callbacks.get((Integer)update.id);
-        if(cbs != null){
-            for(Handler cb : cbs){
-                cb.handle(update);
+        int id = -1;
+        if(update.id instanceof Integer) id = (Integer)update.id;
+        if(update.id instanceof Long) id = (int)((long)((Long)update.id));
+        if(id != -1){
+            List<Handler> cbs = callbacks.get(id);
+            if(cbs != null){
+                for(Handler cb : cbs){
+                    cb.handle(update);
+                }
             }
         }
         handle(update);
@@ -161,14 +171,12 @@ public class Client implements Runnable{
             handler.handle(update);
         }
     }
-
-    public void handle(Update update){}
-
+    
     public void handle(Connect update){
         servername = update.from;
         availableExtensions.addAll(update.extensions);
         if(availableExtensions.contains("shirakumo-emotes")){
-            s("EMOTES", "names", emotes.keySet());
+            s("EMOTES", "names", new ArrayList<String>(emotes.keySet()));
         }
     }
 

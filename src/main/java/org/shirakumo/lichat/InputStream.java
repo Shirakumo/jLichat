@@ -20,6 +20,8 @@ public class InputStream{
         if(buffer == -1){
             try{
                 buffer = reader.read();
+                if(buffer != -1)
+                    System.out.print(new String(Character.toChars(buffer)));
             }catch(IOException ex){
                 buffer = -1;
             }
@@ -39,6 +41,8 @@ public class InputStream{
         if(buffer == -1){
             try{
                 buffer = reader.read();
+                if(buffer != -1)
+                    System.out.print(new String(Character.toChars(buffer)));
             }catch(IOException ex){
                 buffer = -1;
             }
