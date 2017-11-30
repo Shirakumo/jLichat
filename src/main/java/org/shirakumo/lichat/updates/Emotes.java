@@ -9,8 +9,10 @@ public class Emotes extends Update{
         CL.registerClass(className, Emotes.class);
     }
 
+    public final List<String> names;
+
     public Emotes(Map<String, Object> initargs){
         super(initargs);
-        
+        names = (List<String>)CL.requiredArg(initargs, "names");
     }
 }

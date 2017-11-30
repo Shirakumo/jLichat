@@ -8,6 +8,10 @@ public class Printer{
         this.stream = stream;
     }
 
+    public Printer(java.io.OutputStream stream){
+        this.stream = new OutputStream(stream);
+    }
+
     private void printSexprList(List<Object> list){
         stream.write("(");
         try{
@@ -28,7 +32,9 @@ public class Printer{
                 if(cp == 92 /* \ */ || cp == 34 /* " */){
                     stream.write("\\");
                 }
-                stream.write(cp);
+                if(cp != 0){
+                    stream.write(cp);
+                }
             }
         }finally{
             stream.write("\"");
@@ -42,6 +48,7 @@ public class Printer{
     private void printSexprToken(String token){
         for(int cp : (Iterable<Integer>) () -> token.codePoints().iterator()){
             switch(cp){
+            case 0: break;
             case 92: /* \ */
             case 35: /* # */
             case 40: /* ( */
@@ -109,5 +116,11 @@ public class Printer{
         }else{
             printSexpr(object);
         }
+        stream.write(0);
+        stream.flush();
+    }
+
+    public void close(){
+        stream.close();
     }
 }

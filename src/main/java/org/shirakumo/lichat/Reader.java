@@ -10,6 +10,10 @@ public class Reader{
         this.stream = stream;
     }
 
+    public Reader(java.io.InputStream stream){
+        this.stream = new InputStream(stream);
+    }
+
     public static boolean isWhitespace(int cp){
         for(int ws : WHITESPACE){
             if(ws == cp) return true;
@@ -217,5 +221,9 @@ public class Reader{
         }else{
             return sexpr;
         }
+    }
+
+    public void close(){
+        stream.close();
     }
 }

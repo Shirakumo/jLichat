@@ -67,19 +67,23 @@ public class CL{
         for(int i=0; i<initargs.length; i+=2){
             argmap.put((String)initargs[i], initargs[i+1]);
         }
+        return makeInstance(findClass(name), argmap);
+    }
+
+    public static StandardObject makeInstance(Class<? extends StandardObject> clas, Map<String, Object> initargs){
         try{
-            return findClass(name).getConstructor(Map.class).newInstance(argmap);
+            return clas.getConstructor(Map.class).newInstance(initargs);
         }catch(NoSuchMethodException ex){
-            CL.error("INVALID-CLASS-DEFINITION", "The class "+name+" is badly defined.");
+            CL.error("INVALID-CLASS-DEFINITION", "The class "+clas+" is badly defined.");
         }catch(InstantiationException ex){
-            CL.error("INSTANTIATION-FAILED", "Failed to create an instance of "+name+".");
+            CL.error("INSTANTIATION-FAILED", "Failed to create an instance of "+clas+".");
         }catch(IllegalAccessException ex){
-            CL.error("INSTANTIATION-FAILED", "Failed to create an instance of "+name+".");
+            CL.error("INSTANTIATION-FAILED", "Failed to create an instance of "+clas+".");
         }catch(java.lang.reflect.InvocationTargetException ex){
             if(ex.getCause() instanceof RuntimeException){
                 throw (RuntimeException)ex.getCause();
             }else{
-                CL.error("INSTANTIATION-FAILED", "Failed to create an instance of "+name+".");
+                CL.error("INSTANTIATION-FAILED", "Failed to create an instance of "+clas+".");
             }
         }
         return null;
@@ -163,5 +167,11 @@ public class CL{
 
     public static long universalToUnix(long universal){
         return universal - universalUnixOffset;
+    }
+
+    public static void sleep(float s){
+        try{
+            Thread.sleep((long)(s*1000));
+        }catch(Exception ex){}
     }
 }

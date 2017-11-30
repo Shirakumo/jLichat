@@ -69,4 +69,10 @@ public class InputStream{
     public void unread(int c){
         buffer = c;
     }
+
+    public void close(){
+        try{
+            reader.close();
+        }catch(IOException ex){}
+    }
 }

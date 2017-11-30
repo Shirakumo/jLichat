@@ -38,4 +38,10 @@ public class OutputStream{
             CL.error("WRITE-ERROR", ex.toString());
         }
     }
+
+    public void close(){
+        try{
+            writer.close();
+        }catch(IOException ex){}
+    }
 }
