@@ -4,10 +4,14 @@ import java.util.*;
 public class StandardObject{
     public static final Symbol className;
     static{
-        className = CL.findSymbol("STANDARD-OBJECT");
+        className = CL.intern("STANDARD-OBJECT");
         CL.registerClass(className, StandardObject.class);
     }
 
     public StandardObject(Map<String, Object> initargs){
+    }
+
+    public String toString(){
+        return "#<"+className+" {"+System.identityHashCode(this)+"}>";
     }
 }

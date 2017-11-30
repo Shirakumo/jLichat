@@ -41,8 +41,17 @@ public class Printer{
         }
     }
 
-    private void printSexprNumber(double number){
-        stream.write(new java.math.BigDecimal(number).stripTrailingZeros().toPlainString());
+    private void printSexprNumber(Number number){
+        if(number instanceof Double)
+            stream.write(new java.math.BigDecimal((Double)number).stripTrailingZeros().toPlainString());
+        else if(number instanceof Float)
+            stream.write(new java.math.BigDecimal((Float)number).stripTrailingZeros().toPlainString());
+        else if(number instanceof Integer)
+            stream.write(((Integer)number).toString());
+        else if(number instanceof Long)
+            stream.write(((Long)number).toString());
+        else if(number instanceof Short)
+            stream.write(((Short)number).toString());
     }
 
     private void printSexprToken(String token){
@@ -94,8 +103,8 @@ public class Printer{
             printSexprString((String)sexpr);
         }else if(sexpr instanceof List){
             printSexprList((List<Object>)sexpr);
-        }else if(sexpr instanceof Double){
-            printSexprNumber((Double)sexpr);
+        }else if(sexpr instanceof Number){
+            printSexprNumber((Number)sexpr);
         }else if(sexpr instanceof Symbol){
             printSexprSymbol((Symbol)sexpr);
         }else{
@@ -104,10 +113,10 @@ public class Printer{
     }
 
     public void toWire(Object object){
-        if(CL.typep(object, "WIRE-OBJECT")){
+        if(object instanceof StandardObject){
             StandardObject wireable = (StandardObject)object;
             List<Object> list = new ArrayList<Object>();
-            list.add(wireable.className);
+            list.add(CL.className(CL.classOf(wireable)));
             for(String slot : CL.classSlots(wireable.getClass())){
                 list.add(CL.findSymbol(slot.toUpperCase(), "KEYWORD"));
                 list.add(CL.slotValue(wireable, slot));

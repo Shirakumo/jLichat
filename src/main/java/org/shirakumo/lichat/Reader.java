@@ -47,7 +47,11 @@ public class Reader{
             skipWhitespace();
         }
         stream.read();
-        return list;
+        if(list.size() == 0){
+            return null;
+        }else{
+            return list;
+        }
     }
 
     private String readSexprString(){
@@ -72,22 +76,20 @@ public class Reader{
         return safeFindSymbol(readSexprToken(), "KEYWORD");
     }
 
-    private double readSexprNumber(){
+    private Number readSexprNumber(){
         StringBuffer out = new StringBuffer();
-        int point = -1;
+        boolean point = false;
         loop:
         for(int i=0;; i++){
             int c = stream.readNoError();
             switch(c){
             case -1: break loop;
             case 46: /* . */
-                if(point != -1){
+                if(point){
                     stream.unread(c);
                     break loop;
-                }else{
-                    point = i;
                 }
-                break;
+                point = true;
             case 48: /* 0 */
             case 49: /* 1 */
             case 50: /* 2 */
@@ -106,12 +108,10 @@ public class Reader{
             }
         }
         String numberString = out.toString();
-        int number = (numberString.equals(""))? 0 : Integer.parseInt(numberString);
-        if(point != -1){
-            int decimal = numberString.length() - point;
-            return number/Math.pow(10, decimal);
+        if(point){
+            return Double.parseDouble(numberString);
         }else{
-            return number;
+            return Long.parseLong(numberString);
         }
     }
 
@@ -197,29 +197,33 @@ public class Reader{
     }
 
     public Object fromWire(){
-        Object sexpr = readSexpr();
-        if(sexpr instanceof List){
-            List<Object> list = (List<Object>)sexpr;
-            Object type = list.get(0);
-            if(!(type instanceof Symbol))
-                CL.error("MALFORMED-WIRE-OBJECT", "The first item in the list is not a symbol.");
+        try{
+            Object sexpr = readSexpr();
+            if(sexpr instanceof List){
+                List<Object> list = (List<Object>)sexpr;
+                Object type = list.get(0);
+                if(!(type instanceof Symbol))
+                    CL.error("MALFORMED-WIRE-OBJECT", "The first item in the list is not a symbol.");
 
-            Map<String, Object> initargs = new HashMap<String, Object>();
-            for(int i=0; i<list.size(); i+=2){
-                Object key = list.get(i);
-                Object val = list.get(i+1);
-                if(!(key instanceof Symbol) || !((Symbol)key).pkg.name.equals("KEYWORD"))
-                    CL.error("MALFORMED-WIRE-OBJECT", "Key is not of type Keyword: "+key);
-                initargs.put(((Symbol)key).name.toLowerCase(), val);
+                Map<String, Object> initargs = new HashMap<String, Object>();
+                for(int i=1; i<list.size(); i+=2){
+                    Object key = list.get(i);
+                    Object val = list.get(i+1);
+                    if(!(key instanceof Symbol) || !((Symbol)key).pkg.name.equals("KEYWORD"))
+                        CL.error("MALFORMED-WIRE-OBJECT", "Key is not of type Keyword: "+key);
+                    initargs.put(((Symbol)key).name.toLowerCase(), val);
+                }
+
+                if(!initargs.containsKey("id"))
+                    CL.error("MISSING-ID", "The ID is missing from the update.");
+                if(!initargs.containsKey("clock"))
+                    CL.error("MISSING-CLOCK", "The CLOCK is missing from the update.");
+                return CL.makeInstance(CL.findClass((Symbol)type), initargs);
+            }else{
+                return sexpr;
             }
-
-            if(!initargs.containsKey("id"))
-                CL.error("MISSING-ID", "The ID is missing from the update.");
-            if(!initargs.containsKey("clock"))
-                CL.error("MISSING-CLOCK", "The CLOCK is missing from the update.");
-            return CL.makeInstance((Symbol)type, initargs);
-        }else{
-            return sexpr;
+        }finally{
+            while(stream.read() != 0);
         }
     }
 

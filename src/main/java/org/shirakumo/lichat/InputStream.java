@@ -55,7 +55,11 @@ public class InputStream{
     public int readNoError(){
         if(buffer == -1){
             try{
-                return reader.read();
+                int c = reader.read();
+                if(c != -1)
+                    System.out.print(new String(Character.toChars(c)));
+                if(c == 0) System.out.println();
+                return c;
             }catch(IOException ex){
                 return -1;
             }

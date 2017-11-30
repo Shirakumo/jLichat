@@ -24,4 +24,8 @@ public class Update extends StandardObject{
     public static int nextId(){
         return IdCounter++;
     }
+
+    public String toString(){
+        return "#<"+className+" FROM "+from+" ID "+id+">";
+    }
 }

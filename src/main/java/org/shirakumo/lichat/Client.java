@@ -14,7 +14,7 @@ public class Client implements Runnable{
     public int pingTimeout = 60;
     public String servername = null;
     public String username = "Lion";
-    public String password = "";
+    public String password = null;
     public String hostname = "localhost";
     public int port = DEFAULT_PORT;
     public final List<String> channels = new ArrayList<String>();
@@ -45,6 +45,7 @@ public class Client implements Runnable{
         socket = new Socket(hostname, port);
         reader = new Reader(socket.getInputStream());
         printer = new Printer(socket.getOutputStream());
+        lastReceived = CL.getUniversalTime();
         s("CONNECT",
           "password", password,
           "version", LICHAT_VERSION,
@@ -73,6 +74,7 @@ public class Client implements Runnable{
         }
 
         if(printer != null){
+            lastReceived = CL.getUniversalTime();
             try{s("DISCONNECT");}catch(Exception ex){}
             printer.close();
             printer = null;
@@ -105,7 +107,9 @@ public class Client implements Runnable{
         if(!argmap.containsKey("from"))
             argmap.put("from", username);
 
-        StandardObject update = CL.makeInstance(CL.findClass(CL.findSymbol(className)), argmap);
+        Symbol name = CL.findSymbol(className);
+        if(name == null) CL.error("NO-SUCH-CLASS", "No such class "+className+".");
+        StandardObject update = CL.makeInstance(CL.findClass(name), argmap);
         send(update);
         return update;
     }
@@ -134,7 +138,7 @@ public class Client implements Runnable{
     private Object read() throws IOException{
         java.io.InputStream stream = socket.getInputStream();
         long time = CL.getUniversalTime();
-        while(stream.available() == 0){
+        while(stream.available() == 0 && !socket.isInputShutdown()){
             CL.sleep(0.1f);
             long passed = CL.getUniversalTime() - time;
             if(pingDelay < passed){

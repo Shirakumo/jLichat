@@ -15,7 +15,7 @@ public class Condition extends RuntimeException{
     }
 
     public String toString(){
-        return "[Condition of type "+getClass().getName()+"]";
+        return "[Condition of type "+type+"] "+message;
     }
 
     public String report(){
