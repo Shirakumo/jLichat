@@ -1,8 +1,9 @@
 package org.shirakumo.lichat;
+import org.shirakumo.lichat.conditions.*;
 import java.util.*;
 
 public class Printer{
-    private final OutputStream stream;
+    public final OutputStream stream;
 
     public Printer(OutputStream stream){
         this.stream = stream;
@@ -108,7 +109,7 @@ public class Printer{
         }else if(sexpr instanceof Symbol){
             printSexprSymbol((Symbol)sexpr);
         }else{
-            CL.error("UNPRINTABLE-OBJECT", "The object "+sexpr+" cannot be printed.");
+            throw new UnprintableObject(sexpr);
         }
     }
 

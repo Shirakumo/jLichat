@@ -1,9 +1,10 @@
 package org.shirakumo.lichat;
+import org.shirakumo.lichat.conditions.*;
 import java.util.*;
 
 public class Reader{
     public static int[] WHITESPACE = new int[]{0x0009, 0x000A, 0x000B, 0x000C, 0x000D, 0x0020, 0x0085, 0x00A0, 0x1680, 0x2000, 0x2001, 0x2002, 0x2003, 0x2004, 0x2005, 0x2006, 0x2008, 0x2009, 0x200A, 0x2028, 0x2029, 0x202F, 0x205F, 0x3000, 0x180E, 0x200B, 0x200C, 0x200D, 0x2060, 0xFEFF};
-    private final InputStream stream;
+    public final InputStream stream;
     public static final Symbol invalidSymbol = CL.makeSymbol("INVALID-SYMBOL");
 
     public Reader(InputStream stream){
@@ -172,7 +173,7 @@ public class Reader{
         case 40: /* ( */
             return readSexprList();
         case 41: /* ) */
-            CL.error("UNMATCHED-CLOSE-PAREN");
+            throw new UnmatchedCloseParen();
         case 34: /* " */
             return readSexprString();
         case 46: /* . */
@@ -203,21 +204,17 @@ public class Reader{
                 List<Object> list = (List<Object>)sexpr;
                 Object type = list.get(0);
                 if(!(type instanceof Symbol))
-                    CL.error("MALFORMED-WIRE-OBJECT", "The first item in the list is not a symbol.");
+                    throw new MalformedWireObject(list);
 
                 Map<String, Object> initargs = new HashMap<String, Object>();
                 for(int i=1; i<list.size(); i+=2){
                     Object key = list.get(i);
                     Object val = list.get(i+1);
                     if(!(key instanceof Symbol) || !((Symbol)key).pkg.name.equals("KEYWORD"))
-                        CL.error("MALFORMED-WIRE-OBJECT", "Key is not of type Keyword: "+key);
+                        throw new MalformedWireObject(list);
                     initargs.put(((Symbol)key).name.toLowerCase(), val);
                 }
 
-                if(!initargs.containsKey("id"))
-                    CL.error("MISSING-ID", "The ID is missing from the update.");
-                if(!initargs.containsKey("clock"))
-                    CL.error("MISSING-CLOCK", "The CLOCK is missing from the update.");
                 return CL.makeInstance(CL.findClass((Symbol)type), initargs);
             }else{
                 return sexpr;

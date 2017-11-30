@@ -2,23 +2,20 @@ package org.shirakumo.lichat;
 
 public class Condition extends RuntimeException{
     private final String message;
-    private final String type;
 
-    public Condition(String type){
-        this.type = type;
-        this.message = this.toString();
+    public Condition(){
+        this.message = null;
     }
     
-    public Condition(String type, String message){
-        this.type = type;
+    public Condition(String message){
         this.message = message;
     }
 
     public String toString(){
-        return "[Condition of type "+type+"] "+message;
+        return "[Condition of type "+this.getClass().getName()+"] "+report();
     }
 
     public String report(){
-        return message;
+        return (message == null)? "" : message;
     }
 }

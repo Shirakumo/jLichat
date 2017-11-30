@@ -1,4 +1,5 @@
 package org.shirakumo.lichat;
+import org.shirakumo.lichat.conditions.*;
 import java.io.InputStreamReader;
 import java.io.IOException;
 
@@ -11,7 +12,7 @@ public class InputStream{
         try{
             reader = new InputStreamReader(is, "utf8");
         }catch(Exception ex){
-            CL.error("ENCODING-UNSUPPORTED", "Your system doesn't support UTF-8.");
+            throw new EncodingUnsupported("utf8");
         }
         this.reader = reader;
     }
@@ -20,8 +21,6 @@ public class InputStream{
         if(buffer == -1){
             try{
                 buffer = reader.read();
-                if(buffer != -1)
-                    System.out.print(new String(Character.toChars(buffer)));
             }catch(IOException ex){
                 buffer = -1;
             }
@@ -33,7 +32,7 @@ public class InputStream{
 
     public int peek(){
         int c = peekNoError();
-        if(buffer == -1) CL.error("END-OF-STREAM");
+        if(buffer == -1) throw new EndOfStream();
         return c;
     }
 
@@ -41,8 +40,6 @@ public class InputStream{
         if(buffer == -1){
             try{
                 buffer = reader.read();
-                if(buffer != -1)
-                    System.out.print(new String(Character.toChars(buffer)));
             }catch(IOException ex){
                 buffer = -1;
             }
@@ -52,18 +49,14 @@ public class InputStream{
 
     public int read(){
         int c = readNoError();
-        if(c == -1) CL.error("END-OF-STREAM");
+        if(c == -1) throw new EndOfStream();
         return c;
     }
 
     public int readNoError(){
         if(buffer == -1){
             try{
-                int c = reader.read();
-                if(c != -1)
-                    System.out.print(new String(Character.toChars(c)));
-                if(c == 0) System.out.println();
-                return c;
+                return reader.read();
             }catch(IOException ex){
                 return -1;
             }

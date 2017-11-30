@@ -26,7 +26,7 @@ public class Test extends HandlerAdapter{
 
     public void handleInput(){
         Scanner sc = new Scanner(System.in);
-        while(sc.hasNextLine()){
+        while(sc.hasNextLine() && client.isConnected()){
             String line = sc.nextLine();
             if(line.indexOf('/') == 0){
                 if(line.indexOf("/join") == 0){
@@ -43,11 +43,17 @@ public class Test extends HandlerAdapter{
                     }else{
                         client.s("CREATE", "channel", null);
                     }
+                }else if(line.indexOf("/disconnect") == 0){
+                    client.disconnect();
                 }
             }else{
                 client.s("MESSAGE", "channel", channel, "text", line);
             }
         }
+    }
+
+    public void handle(Disconnect disconnect){
+        System.out.println("[SYSTEM] Disconnected.");
     }
 
     public void handle(Failure update){
@@ -56,7 +62,7 @@ public class Test extends HandlerAdapter{
 
     public void handle(Join update){
         System.out.println("["+update.channel+"] "+update.from+" ** joined");
-        if(update.from.equals(client.username)) channel = update.from;
+        if(update.from.equals(client.username)) channel = update.channel;
     }
 
     public void handle(Leave update){

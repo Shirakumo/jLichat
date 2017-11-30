@@ -1,5 +1,6 @@
 package org.shirakumo.lichat;
 import org.shirakumo.lichat.updates.*;
+import org.shirakumo.lichat.conditions.*;
 import java.util.*;
 import java.util.function.*;
 
@@ -107,7 +108,7 @@ public class CL{
 
     public static Package makePackage(String name){
         if(packages.get(name) != null)
-            error("PACKAGE-ALREADY-EXISTS", "A package with the name "+name+" already exists");
+            throw new PackageAlreadyExists(name);
         Package pkg = new Package(name);
         packages.put(name, pkg);
         return pkg;
@@ -125,19 +126,18 @@ public class CL{
         try{
             return clas.getConstructor(Map.class).newInstance(initargs);
         }catch(NoSuchMethodException ex){
-            CL.error("INVALID-CLASS-DEFINITION", "The class "+clas+" is badly defined.");
+            throw new InvalidClassDefinition(clas);
         }catch(InstantiationException ex){
-            CL.error("INSTANTIATION-FAILED", "Failed to create an instance of "+clas+".");
+            throw new InstantiationFailed(clas, initargs);
         }catch(IllegalAccessException ex){
-            CL.error("INSTANTIATION-FAILED", "Failed to create an instance of "+clas+".");
+            throw new InstantiationFailed(clas, initargs);
         }catch(java.lang.reflect.InvocationTargetException ex){
             if(ex.getCause() instanceof RuntimeException){
                 throw (RuntimeException)ex.getCause();
             }else{
-                CL.error("INSTANTIATION-FAILED", "Failed to create an instance of "+clas+".");
+                throw new InstantiationFailed(clas, initargs);
             }
         }
-        return null;
     }
 
     public static Class<? extends StandardObject> registerClass(Symbol name, Class<? extends StandardObject> clas){
@@ -148,7 +148,7 @@ public class CL{
 
     public static Class<? extends StandardObject> findClass(Symbol name){
         Class<? extends StandardObject> clas = classes.get(name);
-        if(clas == null) CL.error("NO-SUCH-CLASS", "No such class "+name+".");
+        if(clas == null) throw new NoSuchClass(name);
         return clas;
     }
 
@@ -173,25 +173,20 @@ public class CL{
         try{
             return object.getClass().getField(slot).get(object);
         }catch(NoSuchFieldException ex){
-            CL.error("SLOT-MISSING", "The slot "+slot+" is not present on the class "+object.className+".");
+            throw new SlotMissing(object, slot);
         }catch(IllegalAccessException ex){
-            CL.error("SLOT-FETCH-FAILED", "Failed to fetch the slot "+slot+" from "+object+".");
+            throw new SlotValueFailed(object, slot);
         }
-        return null;
     }
 
     public static Object requiredArg(Map<String, Object> map, String arg){
         if(!map.containsKey(arg))
-            CL.error("MISSING-ARGUMENT", "The argument "+arg+" is required, but not provided.");
+            throw new MissingArgument(arg);
         return map.get(arg);
     }
 
-    public static Condition error(String type){
-        throw new Condition(type);
-    }
-
-    public static Condition error(String type, String message){
-        throw new Condition(type, message);
+    public static Condition error(String message){
+        throw new Condition(message);
     }
 
     private static final long universalUnixOffset = 2208988800L;

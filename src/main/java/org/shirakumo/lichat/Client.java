@@ -1,5 +1,6 @@
 package org.shirakumo.lichat;
 import org.shirakumo.lichat.updates.*;
+import org.shirakumo.lichat.conditions.*;
 import java.util.*;
 import java.io.*;
 import java.net.*;
@@ -40,10 +41,15 @@ public class Client extends HandlerAdapter implements Runnable{
         this.port = port;
     }
 
+    public boolean isConnected(){
+        return socket != null;
+    }
+
     public void connect() throws UnknownHostException, IOException{
-        if(socket != null)
-            CL.error("Already connected.");
+        if(isConnected())
+            throw new AlreadyConnected();
         socket = new Socket(hostname, port);
+        socket.setSoTimeout(100);
         reader = new Reader(socket.getInputStream());
         printer = new Printer(socket.getOutputStream());
         lastReceived = CL.getUniversalTime();
@@ -56,8 +62,8 @@ public class Client extends HandlerAdapter implements Runnable{
     }
 
     public void disconnect(){
-        if(socket == null)
-            CL.error("Not connected.");
+        if(!isConnected())
+            throw new NotConnected();
         
         channels.clear();
         availableExtensions.clear();
@@ -109,7 +115,7 @@ public class Client extends HandlerAdapter implements Runnable{
             argmap.put("from", username);
 
         Symbol name = CL.findSymbol(className);
-        if(name == null) CL.error("NO-SUCH-CLASS", "No such class "+className+".");
+        if(name == null) throw new NoSuchClass(CL.makeSymbol(className));
         StandardObject update = CL.makeInstance(CL.findClass(name), argmap);
         send(update);
         return update;
@@ -123,7 +129,7 @@ public class Client extends HandlerAdapter implements Runnable{
         try{
             Object read = read();
             if(!(read instanceof Connect)){
-                CL.error("INVALID-UPDATE", "Received non-CONNNECT update: "+read);
+                throw new InvalidUpdateReceived(read);
             }
             process((Update)read);
             while(!Thread.interrupted()){
@@ -141,16 +147,14 @@ public class Client extends HandlerAdapter implements Runnable{
     }
 
     private Object read() throws IOException{
-        // java.io.InputStream stream = socket.getInputStream();
-        // long time = CL.getUniversalTime();
-        // while(stream.available() == 0 && !socket.isInputShutdown()){
-        //     CL.sleep(0.1f);
-        //     long passed = CL.getUniversalTime() - time;
-        //     if(pingDelay < passed){
-        //         s("PING");
-        //         time = CL.getUniversalTime();
-        //     }
-        // }
+        long time = CL.getUniversalTime();
+        while(!reader.stream.hasMore()){
+            long passed = CL.getUniversalTime() - time;
+            if(pingDelay < passed){
+                s("PING");
+                time = CL.getUniversalTime();
+            }
+        }
         return reader.fromWire();
     }
 

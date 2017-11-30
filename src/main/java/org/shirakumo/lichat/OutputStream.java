@@ -1,4 +1,5 @@
 package org.shirakumo.lichat;
+import org.shirakumo.lichat.conditions.*;
 import java.io.OutputStreamWriter;
 import java.io.IOException;
 
@@ -10,7 +11,7 @@ public class OutputStream{
         try{
             writer = new OutputStreamWriter(os, "utf8");
         }catch(Exception ex){
-            CL.error("ENCODING-UNSUPPORTED", "Your system doesn't support UTF-8.");
+            throw new EncodingUnsupported("utf8");
         }
         this.writer = writer;
     }
@@ -19,7 +20,7 @@ public class OutputStream{
         try{
             writer.write(c);
         }catch(Exception ex){
-            CL.error("WRITE-ERROR", ex.toString());
+            throw new WriteError(ex);
         }
     }
 
@@ -27,7 +28,7 @@ public class OutputStream{
         try{
             writer.write(s, 0, s.length());
         }catch(Exception ex){
-            CL.error("WRITE-ERROR", ex.toString());
+            throw new WriteError(ex);
         }
     }
 
@@ -35,7 +36,7 @@ public class OutputStream{
         try{
             writer.flush();
         }catch(Exception ex){
-            CL.error("WRITE-ERROR", ex.toString());
+            throw new WriteError(ex);
         }
     }
 
