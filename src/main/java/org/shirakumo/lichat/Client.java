@@ -141,16 +141,16 @@ public class Client extends HandlerAdapter implements Runnable{
     }
 
     private Object read() throws IOException{
-        java.io.InputStream stream = socket.getInputStream();
-        long time = CL.getUniversalTime();
-        while(stream.available() == 0 && !socket.isInputShutdown()){
-            CL.sleep(0.1f);
-            long passed = CL.getUniversalTime() - time;
-            if(pingDelay < passed){
-                s("PING");
-                time = CL.getUniversalTime();
-            }
-        }
+        // java.io.InputStream stream = socket.getInputStream();
+        // long time = CL.getUniversalTime();
+        // while(stream.available() == 0 && !socket.isInputShutdown()){
+        //     CL.sleep(0.1f);
+        //     long passed = CL.getUniversalTime() - time;
+        //     if(pingDelay < passed){
+        //         s("PING");
+        //         time = CL.getUniversalTime();
+        //     }
+        // }
         return reader.fromWire();
     }
 

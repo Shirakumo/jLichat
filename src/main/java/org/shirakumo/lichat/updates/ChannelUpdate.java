@@ -9,10 +9,10 @@ public class ChannelUpdate extends Update{
         CL.registerClass(className, ChannelUpdate.class);
     }
 
-    public final String channel = null;
+    public final String channel;
 
     public ChannelUpdate(Map<String, Object> initargs){
         super(initargs);
-        
+        channel = (String)CL.requiredArg(initargs, "channel");
     }
 }

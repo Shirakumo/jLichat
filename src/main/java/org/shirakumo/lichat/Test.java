@@ -2,7 +2,7 @@ package org.shirakumo.lichat;
 import org.shirakumo.lichat.updates.*;
 import java.util.*;
 
-public class Test implements Handler{
+public class Test extends HandlerAdapter{
     public static void main(String[] args) throws Exception{
         switch(args.length){
         case 4: new Test(args[0], args[1], args[2], Integer.parseInt(args[3])); break;
@@ -37,15 +37,17 @@ public class Test implements Handler{
                     }else{
                         client.s("LEAVE", "channel", channel);
                     }
+                }else if(line.indexOf("/create") == 0){
+                    if(line.length() > "/leave".length()){
+                        client.s("CREATE", "channel", line.substring("/create ".length()));
+                    }else{
+                        client.s("CREATE", "channel", null);
+                    }
                 }
             }else{
                 client.s("MESSAGE", "channel", channel, "text", line);
             }
         }
-    }
-
-    public void handle(Update update){
-        
     }
 
     public void handle(Failure update){
