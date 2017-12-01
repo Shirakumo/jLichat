@@ -29,13 +29,18 @@ public class Printer{
     private void printSexprString(String string){
         stream.write("\"");
         try{
-            for(int cp : (Iterable<Integer>) () -> string.codePoints().iterator()){
+            final int length = string.length();
+            for(int offset = 0; offset < length;){
+                final int cp = string.codePointAt(offset);
+                
                 if(cp == 92 /* \ */ || cp == 34 /* " */){
                     stream.write("\\");
                 }
                 if(cp != 0){
                     stream.write(cp);
                 }
+                
+                offset += Character.charCount(cp);
             }
         }finally{
             stream.write("\"");
@@ -56,7 +61,10 @@ public class Printer{
     }
 
     private void printSexprToken(String token){
-        for(int cp : (Iterable<Integer>) () -> token.codePoints().iterator()){
+        final int length = token.length();
+        for(int offset = 0; offset < length;){
+            final int cp = token.codePointAt(offset);
+            
             switch(cp){
             case 0: break;
             case 92: /* \ */
@@ -81,6 +89,8 @@ public class Printer{
                 break;
             }
             stream.write(cp);
+            
+            offset += Character.charCount(cp);
         }
     }
 
