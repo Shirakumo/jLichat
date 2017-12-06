@@ -42,21 +42,12 @@ public class Client extends HandlerAdapter implements Runnable{
     }
 
     public boolean isConnected(){
-        return socket != null;
+        return socket != null && socket.isConnected() && !socket.isClosed();
     }
 
-    public void connect() throws UnknownHostException, IOException{
+    public void connect(){
         if(isConnected())
             throw new AlreadyConnected();
-        socket = new Socket(hostname, port);
-        socket.setSoTimeout(100);
-        reader = new Reader(socket.getInputStream());
-        printer = new Printer(socket.getOutputStream());
-        lastReceived = CL.getUniversalTime();
-        s("CONNECT",
-          "password", password,
-          "version", LICHAT_VERSION,
-          "extensions", EXTENSIONS);
         thread = new Thread(this);
         thread.start();
     }
@@ -95,8 +86,9 @@ public class Client extends HandlerAdapter implements Runnable{
 
     private synchronized Object send(Object wireable){
         if(pingTimeout < (CL.getUniversalTime() - lastReceived)){
+            for(Handler handler : handlers)
+                try{handler.onConnectionLost(new PingTimeout());}catch(Exception ex){}
             disconnect();
-            // FIXME: handle failure
         }
         printer.toWire(wireable);
         return wireable;
@@ -127,6 +119,17 @@ public class Client extends HandlerAdapter implements Runnable{
 
     public void run(){
         try{
+            socket = new Socket(hostname, port);
+            socket.setSoTimeout(100);
+            reader = new Reader(socket.getInputStream());
+            printer = new Printer(socket.getOutputStream());
+            lastReceived = CL.getUniversalTime();
+            s("CONNECT",
+              "password", password,
+              "version", LICHAT_VERSION,
+              "extensions", EXTENSIONS);
+            
+            
             Object read = read();
             if(!(read instanceof Connect)){
                 throw new InvalidUpdateReceived(read);
@@ -140,9 +143,12 @@ public class Client extends HandlerAdapter implements Runnable{
                 }
             }
         }catch(IOException ex){
-            // FIXME: handle failure
+            for(Handler handler : handlers){
+                handler.onConnectionLost(ex);
+            }
         }finally{
-            disconnect();
+            if(isConnected())
+                disconnect();
         }
     }
 

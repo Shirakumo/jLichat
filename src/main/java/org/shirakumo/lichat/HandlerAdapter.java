@@ -95,4 +95,5 @@ public class HandlerAdapter implements Handler{
     public void handle(UsernameMismatch update){}
     public void handle(UsernameTaken update){}
     public void handle(Users update){}
+    public void onConnectionLost(Exception ex){}
 }
