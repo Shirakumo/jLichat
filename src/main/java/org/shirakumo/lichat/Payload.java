@@ -18,7 +18,7 @@ public class Payload{
     }
 
     public Payload(String name, String contentType, String data){
-        this(name, contentType, Base64.getDecoder().decode(data));
+        this(name, contentType, Base64.decode(data));
     }
 
     public Payload(String name, String contentType, byte[] data){
