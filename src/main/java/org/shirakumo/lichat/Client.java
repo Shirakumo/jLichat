@@ -86,8 +86,7 @@ public class Client extends HandlerAdapter implements Runnable{
 
     private synchronized Object send(Object wireable){
         if(pingTimeout < (CL.getUniversalTime() - lastReceived)){
-            for(Handler handler : handlers)
-                try{handler.onConnectionLost(new PingTimeout());}catch(Exception ex){}
+            handle(ConnectionLost.create(new PingTimeout()));
             disconnect();
         }
         printer.toWire(wireable);
@@ -143,9 +142,7 @@ public class Client extends HandlerAdapter implements Runnable{
                 }
             }
         }catch(IOException ex){
-            for(Handler handler : handlers){
-                handler.onConnectionLost(ex);
-            }
+            process(ConnectionLost.create(ex));
         }finally{
             if(isConnected())
                 disconnect();

@@ -14,6 +14,7 @@ public class HandlerAdapter implements Handler{
         if(update instanceof Channels) handle((Channels)update);
         if(update instanceof Connect) handle((Connect)update);
         if(update instanceof ConnectionUnstable) handle((ConnectionUnstable)update);
+        if(update instanceof ConnectionLost) handle((ConnectionLost)update);
         if(update instanceof Create) handle((Create)update);
         if(update instanceof Data) handle((Data)update);
         if(update instanceof Disconnect) handle((Disconnect)update);
@@ -95,5 +96,5 @@ public class HandlerAdapter implements Handler{
     public void handle(UsernameMismatch update){}
     public void handle(UsernameTaken update){}
     public void handle(Users update){}
-    public void onConnectionLost(Exception ex){}
+    public void handle(ConnectionLost update){}
 }

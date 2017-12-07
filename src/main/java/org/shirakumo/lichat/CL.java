@@ -36,6 +36,7 @@ public class CL{
         registerClass(intern("CHANNELS"), Channels.class);
         registerClass(intern("CONNECT"), Connect.class);
         registerClass(intern("CONNECTION-UNSTABLE"), ConnectionUnstable.class);
+        registerClass(intern("CONNECTION-LOST"), ConnectionLost.class);
         registerClass(intern("CREATE"), Create.class);
         registerClass(intern("DATA"), Data.class);
         registerClass(intern("DISCONNECT"), Disconnect.class);
