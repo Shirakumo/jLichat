@@ -4,6 +4,7 @@ import org.shirakumo.lichat.conditions.*;
 import java.util.*;
 import java.io.*;
 import java.net.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Client extends HandlerAdapter implements Runnable{
     public static final String LICHAT_VERSION = "1.3";
@@ -22,8 +23,9 @@ public class Client extends HandlerAdapter implements Runnable{
     public final List<String> availableExtensions = new ArrayList<String>();
     public final Map<String,Payload> emotes = new HashMap<String,Payload>();
     
-    private List<Handler> handlers = new ArrayList<Handler>();
-    private Map<Integer, List<Handler>> callbacks = new HashMap<Integer, List<Handler>>();
+    private final List<Handler> handlers = new ArrayList<Handler>();
+    private final Map<Integer, List<Handler>> callbacks = new HashMap<Integer, List<Handler>>();
+    private final Queue<Object> sendQueue = new ConcurrentLinkedQueue<Object>();
     private Socket socket;
     private Reader reader;
     private Printer printer;
@@ -55,7 +57,8 @@ public class Client extends HandlerAdapter implements Runnable{
     public void disconnect(){
         if(!isConnected())
             throw new NotConnected();
-        
+
+        while(sendQueue.poll() != null);
         channels.clear();
         availableExtensions.clear();
         servername = null;
@@ -85,11 +88,7 @@ public class Client extends HandlerAdapter implements Runnable{
     }
 
     private synchronized Object send(Object wireable){
-        if(pingTimeout < (CL.getUniversalTime() - lastReceived)){
-            handle(ConnectionLost.create(new PingTimeout()));
-            disconnect();
-        }
-        printer.toWire(wireable);
+        sendQueue.offer(wireable);
         return wireable;
     }
 
@@ -127,21 +126,26 @@ public class Client extends HandlerAdapter implements Runnable{
               "password", password,
               "version", LICHAT_VERSION,
               "extensions", EXTENSIONS);
-            
-            
+
             Object read = read();
             if(!(read instanceof Connect)){
                 throw new InvalidUpdateReceived(read);
             }
             process((Update)read);
             while(!Thread.interrupted()){
+                for(Object o : sendQueue){
+                    printer.toWire(o);
+                }
                 read = read();
-                lastReceived = CL.getUniversalTime();
                 if(read instanceof Update){
+                    lastReceived = CL.getUniversalTime();
                     process((Update)read);
                 }
+                if(pingTimeout < (CL.getUniversalTime() - lastReceived)){
+                    throw new PingTimeout();
+                }
             }
-        }catch(IOException ex){
+        }catch(Exception ex){
             process(ConnectionLost.create(ex));
         }finally{
             if(isConnected())
