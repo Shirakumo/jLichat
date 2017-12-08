@@ -142,11 +142,14 @@ public class Client extends HandlerAdapter implements Runnable{
                 for(Object o = sendQueue.poll(); o != null; o = sendQueue.poll()){
                     printer.toWire(o);
                 }
-                read = reader.fromWire();
+                if(reader.stream.hasMore()){
+                    read = reader.fromWire();
+                }
                 if(read instanceof Update){
                     lastReceived = CL.getUniversalTime();
                     lastPing = lastReceived;
                     process((Update)read);
+                    read = null;
                 }
                 if(pingDelay < (CL.getUniversalTime() - lastPing)){
                     lastPing = CL.getUniversalTime();
