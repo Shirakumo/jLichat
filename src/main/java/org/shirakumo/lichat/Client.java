@@ -130,20 +130,27 @@ public class Client extends HandlerAdapter implements Runnable{
                                            "password", password,
                                            "version", LICHAT_VERSION,
                                            "extensions", EXTENSIONS));
-            Object read = read();
+            while(!reader.stream.hasMore()){CL.sleep(0.1);}
+            Object read = reader.fromWire();
             if(!(read instanceof Connect)){
                 throw new InvalidUpdateReceived(read);
             }
             process((Update)read);
 
+            long lastPing = CL.getUniversalTime();
             while(!Thread.interrupted()){
                 for(Object o = sendQueue.poll(); o != null; o = sendQueue.poll()){
                     printer.toWire(o);
                 }
-                read = read();
+                read = reader.fromWire();
                 if(read instanceof Update){
                     lastReceived = CL.getUniversalTime();
+                    lastPing = lastReceived;
                     process((Update)read);
+                }
+                if(pingDelay < (CL.getUniversalTime() - lastPing)){
+                    lastPing = CL.getUniversalTime();
+                    s("PING");
                 }
                 if(pingTimeout < (CL.getUniversalTime() - lastReceived)){
                     throw new PingTimeout();
@@ -155,18 +162,6 @@ public class Client extends HandlerAdapter implements Runnable{
             if(isConnected())
                 disconnect();
         }
-    }
-
-    private Object read() throws IOException{
-        long time = CL.getUniversalTime();
-        while(!reader.stream.hasMore()){
-            long passed = CL.getUniversalTime() - time;
-            if(pingDelay < passed){
-                s("PING");
-                time = CL.getUniversalTime();
-            }
-        }
-        return reader.fromWire();
     }
 
     public void process(Update update){

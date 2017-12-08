@@ -2,7 +2,6 @@ package org.shirakumo.lichat;
 import org.shirakumo.lichat.updates.*;
 import org.shirakumo.lichat.conditions.*;
 import java.util.*;
-import java.util.function.*;
 
 public class CL{
     private static final Map<String, Package> packages;
@@ -201,6 +200,12 @@ public class CL{
     }
 
     public static void sleep(float s){
+        try{
+            Thread.sleep((long)(s*1000));
+        }catch(Exception ex){}
+    }
+
+    public static void sleep(double s){
         try{
             Thread.sleep((long)(s*1000));
         }catch(Exception ex){}
