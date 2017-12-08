@@ -137,7 +137,7 @@ public class Client extends HandlerAdapter implements Runnable{
             process((Update)read);
 
             while(!Thread.interrupted()){
-                for(Object o : sendQueue){
+                for(Object o = sendQueue.poll(); o != null; o = sendQueue.poll()){
                     printer.toWire(o);
                 }
                 read = read();
