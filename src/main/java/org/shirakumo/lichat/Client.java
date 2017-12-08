@@ -122,16 +122,20 @@ public class Client extends HandlerAdapter implements Runnable{
             reader = new Reader(socket.getInputStream());
             printer = new Printer(socket.getOutputStream());
             lastReceived = CL.getUniversalTime();
-            s("CONNECT",
-              "password", password,
-              "version", LICHAT_VERSION,
-              "extensions", EXTENSIONS);
 
+            printer.toWire(CL.makeInstance(CL.findSymbol("CONNECT"),
+                                           "clock", CL.getUniversalTime(),
+                                           "id", nextId(),
+                                           "from", username,
+                                           "password", password,
+                                           "version", LICHAT_VERSION,
+                                           "extensions", EXTENSIONS));
             Object read = read();
             if(!(read instanceof Connect)){
                 throw new InvalidUpdateReceived(read);
             }
             process((Update)read);
+
             while(!Thread.interrupted()){
                 for(Object o : sendQueue){
                     printer.toWire(o);
