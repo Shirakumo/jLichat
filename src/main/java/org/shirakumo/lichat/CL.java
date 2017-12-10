@@ -1,6 +1,9 @@
 package org.shirakumo.lichat;
 import org.shirakumo.lichat.updates.*;
 import org.shirakumo.lichat.conditions.*;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.*;
 
 public class CL{
@@ -209,5 +212,16 @@ public class CL{
         try{
             Thread.sleep((long)(s*1000));
         }catch(Exception ex){}
+    }
+
+    public static byte[] readOctetStream(java.io.InputStream in) throws IOException{
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        int nRead;
+        byte[] buffer = new byte[4096];
+        while ((nRead = in.read(buffer, 0, buffer.length)) != -1) {
+            out.write(buffer, 0, nRead);
+        }
+        in.close();
+        return out.toByteArray();
     }
 }

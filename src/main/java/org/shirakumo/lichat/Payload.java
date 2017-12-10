@@ -1,8 +1,9 @@
 package org.shirakumo.lichat;
 import org.shirakumo.lichat.updates.*;
+
+import java.net.URLConnection;
 import java.util.*;
 import java.io.*;
-import java.nio.file.*;
 
 public class Payload{
     public final String name;
@@ -17,6 +18,14 @@ public class Payload{
         this(update.filename, update.contentType, update.payload);
     }
 
+    public Payload(String path) throws IOException{
+        this(new File(path));
+    }
+
+    public Payload(File path) throws IOException{
+        this(path.getName(), URLConnection.guessContentTypeFromName(path.getName()), new FileInputStream(path));
+    }
+
     public Payload(String name, String contentType, String data){
         this(name, contentType, Base64.decode(data));
     }
@@ -27,22 +36,19 @@ public class Payload{
         this.data = data;
     }
 
-    public Payload(String path) throws IOException{
-        this(Paths.get(path));
-    }
-
-    public Payload(Path path) throws IOException{
-        String filname = path.getFileName().toString();
-        name = filname.substring(0, filname.lastIndexOf('.'));
-        contentType = Files.probeContentType(path);
-        data = Files.readAllBytes(path);
+    public Payload(String name, String contentType, java.io.InputStream stream) throws IOException{
+        this.name = name;
+        this.contentType = contentType;
+        this.data = CL.readOctetStream(stream);
     }
 
     public void save(String path) throws IOException{
-        save(Paths.get(path));
+        save(new File(path));
     }
 
-    public void save(Path path) throws IOException{
-        Files.write(path, data);
+    public void save(File path) throws IOException{
+        FileOutputStream out = new FileOutputStream(path);
+        out.write(data);
+        out.close();
     }
 }
