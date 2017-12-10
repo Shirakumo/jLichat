@@ -123,13 +123,23 @@ public class Printer{
         }
     }
 
+    private String slotToSymbolName(String slot){
+        StringBuilder builder = new StringBuilder();
+        for(int i=0; i<slot.length(); i++){
+            char c = slot.charAt(i);
+            if(Character.isUpperCase(c)) builder.append('-');
+            builder.append(Character.toLowerCase(c));
+        }
+        return builder.toString();
+    }
+
     public void toWire(Object object){
         if(object instanceof StandardObject){
             StandardObject wireable = (StandardObject)object;
             List<Object> list = new ArrayList<Object>();
             list.add(CL.className(CL.classOf(wireable)));
             for(String slot : CL.classSlots(wireable.getClass())){
-                list.add(CL.findSymbol(slot.toUpperCase(), "KEYWORD"));
+                list.add(CL.findSymbol(slotToSymbolName(slot), "KEYWORD"));
                 list.add(CL.slotValue(wireable, slot));
             }
             printSexpr(list);
