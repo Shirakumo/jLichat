@@ -11,7 +11,7 @@ public class Data extends ChannelUpdate{
 
     public final String contentType;
     public final String filename;
-    public final String payload;
+    public String payload;
 
     public Data(Map<String, Object> initargs){
         super(initargs);
