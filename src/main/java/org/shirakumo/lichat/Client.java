@@ -130,7 +130,7 @@ public class Client extends HandlerAdapter implements Runnable{
                                            "password", password,
                                            "version", LICHAT_VERSION,
                                            "extensions", EXTENSIONS));
-            while(!reader.stream.hasMore()){CL.sleep(0.1);}
+            CL.sleep(0.1);
             Object read = reader.fromWire();
             if(!(read instanceof Connect)){
                 throw new InvalidUpdateReceived(read);
