@@ -220,7 +220,7 @@ public class Reader{
                 return sexpr;
             }
         }finally{
-            while(stream.read() != 0);
+            while(0 < stream.readNoError());
         }
     }
 
