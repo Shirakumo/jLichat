@@ -58,6 +58,11 @@ public class Client extends HandlerAdapter implements Runnable{
         if(!isConnected())
             throw new NotConnected();
 
+        lastReceived = CL.getUniversalTime();
+        try{s("DISCONNECT");}catch(Exception ex){}
+    }
+
+    private void cleanup(){
         while(sendQueue.poll() != null);
         channels.clear();
         availableExtensions.clear();
@@ -75,12 +80,10 @@ public class Client extends HandlerAdapter implements Runnable{
         }
 
         if(printer != null){
-            lastReceived = CL.getUniversalTime();
-            try{s("DISCONNECT");}catch(Exception ex){}
             printer.close();
             printer = null;
         }
-        
+
         if(socket != null){
             try{socket.close();}catch(IOException ex){}
             socket = null;
@@ -92,7 +95,13 @@ public class Client extends HandlerAdapter implements Runnable{
         return wireable;
     }
 
-    public StandardObject s(String className, Object... initargs){
+    public Update s(String className, Object... initargs){
+        Update update = construct(className, initargs);
+        send(update);
+        return update;
+    }
+
+    public Update construct(String className, Object... initargs){
         Map<String, Object> argmap = new HashMap<String, Object>();
         for(int i=0; i<initargs.length; i+=2){
             argmap.put((String)initargs[i], initargs[i+1]);
@@ -106,9 +115,7 @@ public class Client extends HandlerAdapter implements Runnable{
 
         Symbol name = CL.findSymbol(className);
         if(name == null) throw new NoSuchClass(CL.makeSymbol(className));
-        StandardObject update = CL.makeInstance(CL.findClass(name), argmap);
-        send(update);
-        return update;
+        return (Update)CL.makeInstance(CL.findClass(name), argmap);
     }
     
     public int nextId(){
@@ -163,10 +170,12 @@ public class Client extends HandlerAdapter implements Runnable{
             process(ConnectionLost.create(ex));
         }finally{
             if(isConnected())
-                disconnect();
+                printer.toWire(construct("DISCONNECT"));
+            cleanup();
         }
     }
 
+    // FIXME: Some kind of way to notify of exceptions that we just ignore in here.
     public void process(Update update){
         int id = -1;
         if(update.id instanceof Integer) id = (Integer)update.id;
@@ -175,13 +184,13 @@ public class Client extends HandlerAdapter implements Runnable{
             List<Handler> cbs = callbacks.get(id);
             if(cbs != null){
                 for(Handler cb : cbs){
-                    cb.handle(update);
+                    try{cb.handle(update);}catch(Exception ex){}
                 }
             }
         }
-        handle(update);
+        try{handle(update);}catch(Exception ex){}
         for(Handler handler : handlers){
-            handler.handle(update);
+            try{handler.handle(update);}catch(Exception ex){}
         }
     }
     
