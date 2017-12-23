@@ -23,7 +23,7 @@ public class CL{
             intern(name, "KEYWORD");
         }
 
-        for(String name : new String[]{"NIL","T"}){
+        for(String name : new String[]{"NIL","T", "AND", "OR", "NOT"}){
             intern(name, "LICHAT-PROTOCOL");
         }
 
