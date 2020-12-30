@@ -10,7 +10,8 @@ public class Client extends HandlerAdapter implements Runnable{
     public static final String LICHAT_VERSION = "1.3";
     public static final int DEFAULT_PORT = 1111;
     public static final List<String> EXTENSIONS = Arrays.asList(new String[]{
-            "shirakumo-data", "shirakumo-backfill", "shirakumo-emotes"});
+            "shirakumo-data", "shirakumo-backfill", "shirakumo-emotes", "shirakumo-channel-data",
+            "shirakumo-edit", "shirakumo-quiet", "shirakumo-pause"});
 
     public int pingDelay = 10;
     public int pingTimeout = 60;
