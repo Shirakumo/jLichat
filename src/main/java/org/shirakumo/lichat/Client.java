@@ -7,7 +7,7 @@ import java.net.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Client extends HandlerAdapter implements Runnable{
-    public static final String LICHAT_VERSION = "1.3";
+    public static final String LICHAT_VERSION = "2.0";
     public static final int DEFAULT_PORT = 1111;
     public static final List<String> EXTENSIONS = Arrays.asList(new String[]{
             "shirakumo-data", "shirakumo-backfill", "shirakumo-emotes", "shirakumo-channel-data",
