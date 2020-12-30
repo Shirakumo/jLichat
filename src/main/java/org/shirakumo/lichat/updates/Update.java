@@ -15,9 +15,9 @@ public class Update extends StandardObject{
 
     public Update(Map<String, Object> initargs){
         super(initargs);
-        clock = (Long)CL.requiredArg(initargs, "clock");
+        clock = (Long)CL.arg(initargs, "clock", CL.getUniversalTime());
         id = (Object)CL.requiredArg(initargs, "id");
-        from = (String)CL.requiredArg(initargs, "from");
+        from = (String)CL.arg(initargs, "from", null);
     }
 
     public String toString(){

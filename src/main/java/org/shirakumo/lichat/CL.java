@@ -188,6 +188,13 @@ public class CL{
         return map.get(arg);
     }
 
+    public static Object arg(Map<String, Object> map, String arg, Object def){
+        if(!map.containsKey(arg))
+            return def;
+        else
+            return map.get(arg);
+    }
+
     public static Condition error(String message){
         throw new Condition(message);
     }

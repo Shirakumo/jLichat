@@ -142,6 +142,8 @@ public class Client extends HandlerAdapter implements Runnable{
             if(!(read instanceof Connect)){
                 throw new InvalidUpdateReceived(read);
             }
+            if(username == null || username.equals(""))
+                username = read.from;
             process((Update)read);
 
             long lastPing = CL.getUniversalTime();
@@ -155,6 +157,7 @@ public class Client extends HandlerAdapter implements Runnable{
                 if(read instanceof Update){
                     lastReceived = CL.getUniversalTime();
                     lastPing = lastReceived;
+                    if(read.from == null) read.from = username;
                     process((Update)read);
                     read = null;
                 }
