@@ -19,11 +19,11 @@ public class CL{
         PACKAGE = makePackage("LICHAT-PROTOCOL");
         makePackage("KEYWORD");
 
-        for(String name : new String[]{"ID","CLOCK","FROM","PASSWORD","VERSION","EXTENSIONS","CHANNEL","TARGET","TEXT","PERMISSIONS","USERS","CHANNELS","REGISTERED","CONNECTIONS","UPDATE-ID","COMPATIBLE-VERSIONS","CONTENT-TYPE","FILENAME","PAYLOAD","ALLOWED-CONTENT-TYPES"}){
+        for(String name : new String[]{"ID","CLOCK","FROM","PASSWORD","VERSION","EXTENSIONS","CHANNEL","TARGET","TEXT","PERMISSIONS","USERS","CHANNELS","REGISTERED","CONNECTIONS","UPDATE-ID","COMPATIBLE-VERSIONS","CONTENT-TYPE","FILENAME","PAYLOAD","ALLOWED-CONTENT-TYPES", "BY", "KEY", "RULE", "KEYS"}){
             intern(name, "KEYWORD");
         }
 
-        for(String name : new String[]{"NIL","T", "AND", "OR", "NOT"}){
+        for(String name : new String[]{"NIL","T", "AND", "OR", "NOT", "+", "-"}){
             intern(name, "LICHAT-PROTOCOL");
         }
 
@@ -34,6 +34,7 @@ public class CL{
         registerClass(intern("BAD-CONTENT-TYPE"), BadContentType.class);
         registerClass(intern("BAD-NAME"), BadName.class);
         registerClass(intern("CHANNEL-UPDATE"), ChannelUpdate.class);
+        registerClass(intern("CHANNEL-INFO"), ChannelInfo.class);
         registerClass(intern("CHANNELNAME-TAKEN"), ChannelnameTaken.class);
         registerClass(intern("CHANNELS"), Channels.class);
         registerClass(intern("CONNECT"), Connect.class);
@@ -41,7 +42,9 @@ public class CL{
         registerClass(intern("CONNECTION-LOST"), ConnectionLost.class);
         registerClass(intern("CREATE"), Create.class);
         registerClass(intern("DATA"), Data.class);
+        registerClass(intern("DESTROY"), Destroy.class);
         registerClass(intern("DISCONNECT"), Disconnect.class);
+        registerClass(intern("EDIT"), Edit.class);
         registerClass(intern("EMOTE"), Emote.class);
         registerClass(intern("EMOTES"), Emotes.class);
         registerClass(intern("FAILURE"), Failure.class);
@@ -52,6 +55,7 @@ public class CL{
         registerClass(intern("INVALID-UPDATE"), InvalidUpdate.class);
         registerClass(intern("JOIN"), Join.class);
         registerClass(intern("KICK"), Kick.class);
+        registerClass(intern("KILL"), Kill.class);
         registerClass(intern("LEAVE"), Leave.class);
         registerClass(intern("MALFORMED-UPDATE"), MalformedUpdate.class);
         registerClass(intern("MESSAGE"), Message.class);
@@ -59,15 +63,19 @@ public class CL{
         registerClass(intern("NO-SUCH-PROFILE"), NoSuchProfile.class);
         registerClass(intern("NO-SUCH-USER"), NoSuchUser.class);
         registerClass(intern("NOT-IN-CHANNEL"), NotInChannel.class);
+        registerClass(intern("PAUSE"), Pause.class);
         registerClass(intern("PERMISSIONS"), Permissions.class);
         registerClass(intern("PING"), Ping.class);
         registerClass(intern("PONG"), Pong.class);
         registerClass(intern("PULL"), Pull.class);
+        registerClass(intern("QUIET"), Quiet.class);
         registerClass(intern("REGISTER"), Register.class);
+        registerClass(intern("SET-CHANNEL-INFO"), SetChannelInfo.class);
         registerClass(intern("TARGET-UPDATE"), TargetUpdate.class);
         registerClass(intern("TEXT-UPDATE"), TextUpdate.class);
         registerClass(intern("TOO-MANY-CONNECTIONS"), TooManyConnections.class);
         registerClass(intern("TOO-MANY-UPDATES"), TooManyUpdates.class);
+        registerClass(intern("UNQUIET"), Unquiet.class);
         registerClass(intern("UPDATE"), Update.class);
         registerClass(intern("UPDATE-FAILURE"), UpdateFailure.class);
         registerClass(intern("UPDATE-TOO-LONG"), UpdateTooLong.class);
