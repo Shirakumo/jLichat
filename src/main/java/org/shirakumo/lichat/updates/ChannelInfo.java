@@ -16,6 +16,6 @@ public class ChannelInfo extends ChannelUpdate{
         if(initargs.get("keys") instanceof Symbol)
             keys.add(CL.intern("T"));
         else
-            keys.addAll((List<Object>)initargs.get("keys"));
+            keys.addAll((List<Symbol>)initargs.get("keys"));
     }
 }

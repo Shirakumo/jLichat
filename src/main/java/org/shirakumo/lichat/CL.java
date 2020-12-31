@@ -197,7 +197,7 @@ public class CL{
     }
 
     public static Object arg(Map<String, Object> map, String arg){
-        arg(map, arg, null);
+        return arg(map, arg, null);
     }
 
     public static Object arg(Map<String, Object> map, String arg, Object def){

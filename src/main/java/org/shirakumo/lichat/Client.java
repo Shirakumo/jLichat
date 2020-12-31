@@ -143,9 +143,10 @@ public class Client extends HandlerAdapter implements Runnable{
             if(!(read instanceof Connect)){
                 throw new InvalidUpdateReceived(read);
             }
+            Update update = (Update) read;
             if(username == null || username.equals(""))
-                username = read.from;
-            process((Update)read);
+                username = update.from;
+            process(update);
 
             long lastPing = CL.getUniversalTime();
             while(!Thread.interrupted()){
@@ -156,10 +157,11 @@ public class Client extends HandlerAdapter implements Runnable{
                     read = reader.fromWire();
                 }
                 if(read instanceof Update){
+                    update = (Update) read;
                     lastReceived = CL.getUniversalTime();
                     lastPing = lastReceived;
-                    if(read.from == null) read.from = username;
-                    process((Update)read);
+                    if(update.from == null) update.from = username;
+                    process(update);
                     read = null;
                 }
                 if(pingDelay < (CL.getUniversalTime() - lastPing)){

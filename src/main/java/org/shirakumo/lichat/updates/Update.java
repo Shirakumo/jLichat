@@ -11,7 +11,7 @@ public class Update extends StandardObject{
 
     public final long clock;
     public final Object id;
-    public final String from;
+    public String from;
 
     public Update(Map<String, Object> initargs){
         super(initargs);
