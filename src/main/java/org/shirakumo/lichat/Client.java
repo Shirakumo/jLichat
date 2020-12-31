@@ -229,7 +229,7 @@ public class Client extends HandlerAdapter implements Runnable{
     }
 
     public void handle(Emote update){
-        emotes.put(update.name, new Payload(update));
+        emotes.put(update.name.toLowerCase(), new Payload(update));
     }
 
     public void addCallback(int id, Handler callback){
