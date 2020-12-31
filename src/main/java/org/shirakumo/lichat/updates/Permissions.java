@@ -13,7 +13,7 @@ public class Permissions extends ChannelUpdate{
 
     public Permissions(Map<String, Object> initargs){
         super(initargs);
-        if(initargs.get("permissions") != null)
+        if(CL.arg(initargs, "permissions") != null)
             permissions.addAll((List<Object>)initargs.get("permissions"));
     }
 }

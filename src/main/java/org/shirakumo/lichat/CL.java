@@ -196,11 +196,20 @@ public class CL{
         return map.get(arg);
     }
 
+    public static Object arg(Map<String, Object> map, String arg){
+        arg(map, arg, null);
+    }
+
     public static Object arg(Map<String, Object> map, String arg, Object def){
         if(!map.containsKey(arg))
             return def;
-        else
-            return map.get(arg);
+        else{
+            Object value = map.get(arg);
+            if(value == findSymbol("NIL"))
+                return null;
+            else
+                return value;
+        }
     }
 
     public static Condition error(String message){

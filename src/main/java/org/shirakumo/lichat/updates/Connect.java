@@ -15,7 +15,7 @@ public class Connect extends Update{
 
     public Connect(Map<String, Object> initargs){
         super(initargs);
-        password = (String)CL.requiredArg(initargs, "password");
+        password = (String)CL.arg(initargs, "password");
         version = (String)CL.requiredArg(initargs, "version");
         extensions.addAll((List<String>)CL.requiredArg(initargs, "extensions"));
     }

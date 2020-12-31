@@ -17,7 +17,7 @@ public class Update extends StandardObject{
         super(initargs);
         clock = (Long)CL.arg(initargs, "clock", CL.getUniversalTime());
         id = (Object)CL.requiredArg(initargs, "id");
-        from = (String)CL.arg(initargs, "from", null);
+        from = (String)CL.arg(initargs, "from");
     }
 
     public String toString(){
