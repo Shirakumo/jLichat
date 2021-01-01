@@ -24,7 +24,7 @@ public class Client extends HandlerAdapter implements Runnable{
     public final List<String> availableExtensions = new ArrayList<String>();
     public final Map<String,Payload> emotes = new HashMap<String,Payload>();
     
-    private final List<Handler> handlers = new ArrayList<Handler>();
+    private final List<Handler> handlers = new java.util.concurrent.CopyOnWriteArrayList<Handler>();
     private final Map<Integer, List<Handler>> callbacks = new HashMap<Integer, List<Handler>>();
     private final Queue<Object> sendQueue = new ConcurrentLinkedQueue<Object>();
     private Socket socket;
