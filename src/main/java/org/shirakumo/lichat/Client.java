@@ -10,8 +10,9 @@ public class Client extends HandlerAdapter implements Runnable{
     public static final String LICHAT_VERSION = "2.0";
     public static final int DEFAULT_PORT = 1111;
     public static final List<String> EXTENSIONS = Arrays.asList(new String[]{
-            "shirakumo-data", "shirakumo-backfill", "shirakumo-emotes", "shirakumo-channel-data",
-            "shirakumo-edit", "shirakumo-quiet", "shirakumo-pause"});
+            "shirakumo-data", "shirakumo-backfill", "shirakumo-emotes", "shirakumo-channel-info",
+            "shirakumo-edit", "shirakumo-quiet", "shirakumo-pause", "shirakumo-ip",
+            "shirakumo-server-management", "shirakumo-channel-trees"});
 
     public int pingDelay = 10;
     public int pingTimeout = 60;
@@ -216,9 +217,10 @@ public class Client extends HandlerAdapter implements Runnable{
         if(update.from.equals(username) && !update.channel.equals(servername)){
             if(!channels.contains(update.channel))
                 channels.add(update.channel);
-            if(availableExtensions.contains("shirakumo-backfill")){
+            if(availableExtensions.contains("shirakumo-backfill"))
                 s("BACKFILL", "channel", update.channel);
-            }
+            if(availableExtensions.contains("shirakumo-channel-info"))
+                s("CHANNEL-INFO", "channel", update.channel, "keys", CL.intern("T"));
         }
     }
 
