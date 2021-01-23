@@ -19,7 +19,7 @@ public class CL{
         PACKAGE = makePackage("LICHAT-PROTOCOL");
         makePackage("KEYWORD");
 
-        for(String name : new String[]{"ID","CLOCK","FROM","PASSWORD","VERSION","EXTENSIONS","CHANNEL","TARGET","TEXT","PERMISSIONS","USERS","CHANNELS","REGISTERED","CONNECTIONS","UPDATE-ID","COMPATIBLE-VERSIONS","CONTENT-TYPE","FILENAME","PAYLOAD","ALLOWED-CONTENT-TYPES", "BY", "KEY", "RULE", "KEYS"}){
+        for(String name : new String[]{"ID","CLOCK","FROM","PASSWORD","VERSION","EXTENSIONS","CHANNEL","TARGET","TEXT","PERMISSIONS","USERS","CHANNELS","REGISTERED","CONNECTIONS","UPDATE-ID","COMPATIBLE-VERSIONS","CONTENT-TYPE","FILENAME","PAYLOAD","ALLOWED-CONTENT-TYPES", "BY", "KEY", "RULE", "KEYS", "UPDATE", "UPDATES", "ATTRIBUTES", "IP", "MASK"}){
             intern(name, "KEYWORD");
         }
 
@@ -33,6 +33,8 @@ public class CL{
         registerClass(intern("BACKFILL"), Backfill.class);
         registerClass(intern("BAD-CONTENT-TYPE"), BadContentType.class);
         registerClass(intern("BAD-NAME"), BadName.class);
+        registerClass(intern("BAN"), Ban.class);
+        registerClass(intern("CAPABILITIES"), Capabilities.class);
         registerClass(intern("CHANNEL-UPDATE"), ChannelUpdate.class);
         registerClass(intern("CHANNEL-INFO"), ChannelInfo.class);
         registerClass(intern("CHANNELNAME-TAKEN"), ChannelnameTaken.class);
@@ -42,17 +44,21 @@ public class CL{
         registerClass(intern("CONNECTION-LOST"), ConnectionLost.class);
         registerClass(intern("CREATE"), Create.class);
         registerClass(intern("DATA"), Data.class);
+        registerClass(intern("DENY"), Deny.class);
         registerClass(intern("DESTROY"), Destroy.class);
         registerClass(intern("DISCONNECT"), Disconnect.class);
         registerClass(intern("EDIT"), Edit.class);
         registerClass(intern("EMOTE"), Emote.class);
         registerClass(intern("EMOTES"), Emotes.class);
         registerClass(intern("FAILURE"), Failure.class);
+        registerClass(intern("GRANT"), Grant.class);
         registerClass(intern("INCOMPATIBLE-VERSION"), IncompatibleVersion.class);
         registerClass(intern("INSUFFICIENT-PERMISSIONS"), InsufficientPermissions.class);
         registerClass(intern("INVALID-PASSWORD"), InvalidPassword.class);
         registerClass(intern("INVALID-PERMISSIONS"), InvalidPermissions.class);
         registerClass(intern("INVALID-UPDATE"), InvalidUpdate.class);
+        registerClass(intern("IP-BAN"), IpBan.class);
+        registerClass(intern("IP-UNBAN"), IpUnban.class);
         registerClass(intern("JOIN"), Join.class);
         registerClass(intern("KICK"), Kick.class);
         registerClass(intern("KILL"), Kill.class);
@@ -70,11 +76,13 @@ public class CL{
         registerClass(intern("PULL"), Pull.class);
         registerClass(intern("QUIET"), Quiet.class);
         registerClass(intern("REGISTER"), Register.class);
+        registerClass(intern("SERVER-INFO"), ServerInfo.class);
         registerClass(intern("SET-CHANNEL-INFO"), SetChannelInfo.class);
         registerClass(intern("TARGET-UPDATE"), TargetUpdate.class);
         registerClass(intern("TEXT-UPDATE"), TextUpdate.class);
         registerClass(intern("TOO-MANY-CONNECTIONS"), TooManyConnections.class);
         registerClass(intern("TOO-MANY-UPDATES"), TooManyUpdates.class);
+        registerClass(intern("UNBAN"), Unban.class);
         registerClass(intern("UNQUIET"), Unquiet.class);
         registerClass(intern("UPDATE"), Update.class);
         registerClass(intern("UPDATE-FAILURE"), UpdateFailure.class);
