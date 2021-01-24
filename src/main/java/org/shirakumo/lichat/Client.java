@@ -252,4 +252,8 @@ public class Client extends HandlerAdapter implements Runnable{
     public void removeHandler(Handler handler){
         handlers.remove(handler);
     }
+
+    public Handler[] listHandlers(){
+        return handlers.toArray(new Handler[0]);
+    }
 }
