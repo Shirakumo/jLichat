@@ -9,11 +9,11 @@ public class Capabilities extends ChannelUpdate{
         CL.registerClass(className, Capabilities.class);
     }
 
-    public final List<Symbol> updates = new ArrayList<Symbol>();
+    public final List<Symbol> permitted = new ArrayList<Symbol>();
 
     public Capabilities(Map<String, Object> initargs){
         super(initargs);
-        if(initargs.get("updates") != null)
-            updates.addAll((List<Symbol>)initargs.get("updates"));
+        if(initargs.get("permitted") != null)
+            permitted.addAll((List<Symbol>)initargs.get("permitted"));
     }
 }
