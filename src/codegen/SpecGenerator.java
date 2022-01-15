@@ -38,36 +38,37 @@ public class SpecGenerator{
 
         emit(File base){
             String className = toCamelCase(name);
+            String superClass = "Update";
             File file = new File(base, className+".java");
             FileWriter writer = new FileWriter(file);
-            writer.write(String.format("
-// File has been auto-generated.
-package org.shirakumo.lichat.updates;
-import org.shirakumo.lichat.*;
-import java.util.*;
-
-public class %s extends %s{
-    public static final Symbol className;
-    static{
-        className = CL.intern(\"%s\", \"%s\");
-        CL.registerClass(className, %1$s.class);
-    }\n", className, superClass, name.name, name.package));
+            writer.write(String.format("// File has been auto-generated."));
+            writer.write(String.format("\npackage org.shirakumo.lichat.updates;"));
+            writer.write(String.format("\nimport org.shirakumo.lichat.*;"));
+            writer.write(String.format("\nimport java.util.*;"));
+            writer.write(String.format("\n"));
+            writer.write(String.format("\npublic class %s extends %s{", className, superClass));
+            writer.write(String.format("\n    public static final Symbol className;"));
+            writer.write(String.format("\n    static{"));
+            writer.write(String.format("\n        className = CL.intern(\"%s\", \"%s\");", name.name, name.package));
+            writer.write(String.format("\n        CL.registerClass(className, %s.class);", className));
+            writer.write(String.format("\n    }"));
             for(SlotDef slot : map.values()){
                 String name = toCamelCase(slot.name);
                 String type = "Object";
                 String value = "null";
-                writer.write(String.format("   public final %s %s = %s;\n", type, name, value));
+            writer.write(String.format("\n   public final %s %s = %s;\n", type, name, value));
             }
-            writer.write(String.format("   public %s(Map<String, Object> initargs){", className));
-            writer.write(String.format("      super(initargs);", className));
+            writer.write(String.format("\n   public %s(Map<String, Object> initargs){", className));
+            writer.write(String.format("\n      super(initargs);", className));
             for(SlotDef slot : map.values()){
                 String name = toCamelCase(slot.name);
                 String type = "Object";
                 String constructor = (slot.optional)? "CL.arg" : "CL.requiredArg";
                 String symname = slot.name.name;
-                writer.write(String.format("      %s = (%s)%s(initargs, \"%s\");\n", name, type, constructor, symname));
+            writer.write(String.format("\n      %s = (%s)%s(initargs, \"%s\");\n", name, type, constructor, symname));
             }
-            writer.write(String.format("  }\n}\n"));
+            writer.write(String.format("\n  }"));
+            writer.write(String.format("\n}"));
         }
     }
 
