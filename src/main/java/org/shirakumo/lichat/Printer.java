@@ -95,11 +95,9 @@ public class Printer{
     }
 
     private void printSexprSymbol(Symbol symbol){
-        if(symbol.pkg == null){
-            stream.write("#:");
-        }else if(symbol.pkg == CL.findPackage("KEYWORD")){
+        if(symbol.pkg == CL.findPackage("keyword")){
             stream.write(":");
-        }else if(symbol.pkg == CL.findPackage("LICHAT-PROTOCOL")){
+        }else if(symbol.pkg == CL.findPackage("lichat")){
         }else{
             printSexprToken(symbol.pkg.name);
             stream.write(":");

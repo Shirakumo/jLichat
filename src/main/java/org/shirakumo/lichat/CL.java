@@ -16,15 +16,15 @@ public class CL{
         packages = new HashMap<String, Package>();
         classes = new HashMap<Symbol, Class<? extends StandardObject>>();
         classNames = new HashMap<Class<? extends StandardObject>, Symbol>();
-        PACKAGE = makePackage("LICHAT-PROTOCOL");
-        makePackage("KEYWORD");
+        PACKAGE = makePackage("lichat");
+        makePackage("keyword");
 
         for(String name : new String[]{"ID","CLOCK","FROM","PASSWORD","VERSION","EXTENSIONS","CHANNEL","TARGET","TEXT","PERMISSIONS","USERS","CHANNELS","REGISTERED","CONNECTIONS","UPDATE-ID","COMPATIBLE-VERSIONS","CONTENT-TYPE","FILENAME","PAYLOAD","ALLOWED-CONTENT-TYPES", "BY", "KEY", "RULE", "KEYS", "UPDATE", "UPDATES", "ATTRIBUTES", "IP", "MASK"}){
             intern(name, "KEYWORD");
         }
 
         for(String name : new String[]{"NIL","T", "AND", "OR", "NOT", "+", "-"}){
-            intern(name, "LICHAT-PROTOCOL");
+            intern(name, "LICHAT");
         }
 
         // Java doesn't execute the static blocks in the classes, so they
@@ -122,10 +122,11 @@ public class CL{
     }
 
     public static Package findPackage(String name){
-        return packages.get(name);
+        return packages.get(name.toLowerCase());
     }
 
     public static Package makePackage(String name){
+        name = name.toLowerCase();
         if(packages.get(name) != null)
             throw new PackageAlreadyExists(name);
         Package pkg = new Package(name);

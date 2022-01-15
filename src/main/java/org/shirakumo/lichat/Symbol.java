@@ -10,9 +10,7 @@ public class Symbol{
     }
 
     public String toString(){
-        if(pkg == null){
-            return "#:"+name;
-        }else if(pkg == CL.findPackage("KEYWORD")){
+        if(pkg == CL.findPackage("keyword")){
             return ":"+name;
         }else{
             return pkg.name+":"+name;

@@ -11,10 +11,11 @@ public class Package{
     }
 
     public Symbol findSymbol(String name){
-        return symbols.get(name);
+        return symbols.get(name.toLowerCase());
     }
 
     public Symbol intern(String name){
+        name = name.toLowerCase();
         Symbol symbol = symbols.get(name);
         if(symbol == null){
             symbol = new Symbol(this, name);

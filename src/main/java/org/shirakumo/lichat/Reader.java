@@ -31,13 +31,9 @@ public class Reader{
     }
 
     private Symbol safeFindSymbol(String name, String pkg){
-        if(pkg == null){
-            return CL.makeSymbol(name);
-        }else{
-            Symbol found = CL.findSymbol(name, pkg);
-            if(found == null) found = invalidSymbol;
-            return found;
-        }
+        Symbol found = CL.findSymbol(name, pkg);
+        if(found == null) found = invalidSymbol;
+        return found;
     }
 
     private List<Object> readSexprList(){
@@ -156,13 +152,9 @@ public class Reader{
         String token = readSexprToken();
         if(stream.peekNoError() == 58){ /* : */
             stream.read();
-            if(token.equals("#")){
-                return safeFindSymbol(readSexprToken(), null);
-            }else{
-                return safeFindSymbol(readSexprToken(), token);
-            }
+            return safeFindSymbol(readSexprToken(), token);
         }else{
-            return safeFindSymbol(token, "LICHAT-PROTOCOL");
+            return safeFindSymbol(token, "lichat");
         }
     }
 

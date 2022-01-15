@@ -104,6 +104,16 @@ public class Client extends HandlerAdapter implements Runnable{
     }
 
     public Update construct(String className, Object... initargs){
+        Symbol name = CL.findSymbol(className);
+        if(name == null) throw new NoSuchClass(CL.makeSymbol(className));
+        construct(name, initargs);
+    }
+
+    public Update construct(Symbol className, Object... initargs){
+        return construct(CL.findClass(name), initargs);
+    }
+
+    public Update construct(Class<? extends StandardObject> cls, Object... initargs){
         Map<String, Object> argmap = new HashMap<String, Object>();
         for(int i=0; i<initargs.length; i+=2){
             argmap.put((String)initargs[i], initargs[i+1]);
@@ -115,9 +125,7 @@ public class Client extends HandlerAdapter implements Runnable{
         if(!argmap.containsKey("from"))
             argmap.put("from", username);
 
-        Symbol name = CL.findSymbol(className);
-        if(name == null) throw new NoSuchClass(CL.makeSymbol(className));
-        return (Update)CL.makeInstance(CL.findClass(name), argmap);
+        return (Update)CL.makeInstance(cls, argmap);
     }
     
     public int nextId(){
@@ -132,7 +140,7 @@ public class Client extends HandlerAdapter implements Runnable{
             printer = new Printer(socket.getOutputStream());
             lastReceived = CL.getUniversalTime();
 
-            printer.toWire(CL.makeInstance(CL.findSymbol("CONNECT"),
+            printer.toWire(CL.makeInstance(CL.findSymbol("connect"),
                                            "clock", CL.getUniversalTime(),
                                            "id", nextId(),
                                            "from", username,
@@ -167,7 +175,7 @@ public class Client extends HandlerAdapter implements Runnable{
                 }
                 if(pingDelay < (CL.getUniversalTime() - lastPing)){
                     lastPing = CL.getUniversalTime();
-                    s("PING");
+                    s("ping");
                 }
                 if(pingTimeout < (CL.getUniversalTime() - lastReceived)){
                     throw new PingTimeout();
@@ -177,7 +185,7 @@ public class Client extends HandlerAdapter implements Runnable{
             process(ConnectionLost.create(ex));
         }finally{
             if(isConnected())
-                printer.toWire(construct("DISCONNECT"));
+                printer.toWire(construct("disconnect"));
             cleanup();
         }
     }
@@ -205,12 +213,12 @@ public class Client extends HandlerAdapter implements Runnable{
         servername = update.from;
         availableExtensions.addAll(update.extensions);
         if(availableExtensions.contains("shirakumo-emotes")){
-            s("EMOTES", "names", new ArrayList<String>(emotes.keySet()));
+            s("emotes", "names", new ArrayList<String>(emotes.keySet()));
         }
     }
 
     public void handle(Ping update){
-        s("PONG");
+        s("pong");
     }
 
     public void handle(Join update){
@@ -218,9 +226,9 @@ public class Client extends HandlerAdapter implements Runnable{
             if(!channels.contains(update.channel))
                 channels.add(update.channel);
             if(availableExtensions.contains("shirakumo-backfill"))
-                s("BACKFILL", "channel", update.channel);
+                s("backfill", "channel", update.channel);
             if(availableExtensions.contains("shirakumo-channel-info"))
-                s("CHANNEL-INFO", "channel", update.channel, "keys", CL.intern("T"));
+                s("channel-info", "channel", update.channel, "keys", CL.intern("T"));
         }
     }
 
