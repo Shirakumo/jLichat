@@ -58,7 +58,7 @@ public class CL{
     public static Package makePackage(String name){
         name = name.toLowerCase();
         if(packages.get(name) != null)
-            throw new PackageAlreadyExists(name);
+            return packages.get(name);
         Package pkg = new Package(name);
         packages.put(name, pkg);
         return pkg;

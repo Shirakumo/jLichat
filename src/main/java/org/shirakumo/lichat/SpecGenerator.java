@@ -1,15 +1,27 @@
+package org.shirakumo.lichat;
 import org.shirakumo.lichat.*;
 import java.io.*;
 import java.util.*;
 import java.util.function.Consumer;
 
 public class SpecGenerator{
-    static String toCamelCase(Symbol symbol){
-        return toCamelCase(symbol.name);
+    static String toCamelCase(Symbol symbol, boolean upcaseFirst){
+        return toCamelCase(symbol.name, upcaseFirst);
     }
 
-    static String toCamelCase(String name){
-        return name;
+    static String toCamelCase(String name, boolean upcaseFirst){
+        String result = "";
+        boolean upcaseNext = upcaseFirst;
+        for(int i=0; i<name.length(); ++i){
+            if(name.charAt(i) == '-')
+                upcaseNext = true;
+            else if(upcaseNext){
+                upcaseNext = false;
+                result += Character.toUpperCase(name.charAt(i));
+            }else
+                result += name.charAt(i);
+        }
+        return result;
     }
     
     class SlotDef{
@@ -79,12 +91,12 @@ public class SpecGenerator{
         }
         
         String declaration(){
-            return String.format("public final %s %s = %s;", typeName(type), toCamelCase(name), defaultValue(type));
+            return String.format("public final %s %s = %s;", typeName(type), toCamelCase(name, false), defaultValue(type));
         }
 
         String initializer(){
             String constructor = (required)? "CL.requiredArg" : "CL.arg";
-            return String.format("%s = (%s)%s(initargs, \"%s\");", toCamelCase(name), typeName(type), constructor, name.name);
+            return String.format("%s = (%s)%s(initargs, \"%s\");", toCamelCase(name, false), typeName(type), constructor, name.name);
         }
     }
     
@@ -100,7 +112,8 @@ public class SpecGenerator{
 
         void init(List<Object> expr){
             name = (Symbol)expr.get(1);
-            superclasses.addAll((List<Symbol>)expr.get(2));
+            if(expr.get(2) != null)
+                superclasses.addAll((List<Symbol>)expr.get(2));
             for(int i=3; i<expr.size(); ++i){
                 SlotDef slot = new SlotDef((List<Object>)expr.get(i));
                 slots.put(slot.name, slot);
@@ -111,7 +124,7 @@ public class SpecGenerator{
             if(superclasses.size() == 0){
                 superClass = "Update";
             }else if(superclasses.size() == 1){
-                superClass = toCamelCase(superclasses.get(0));
+                superClass = toCamelCase(superclasses.get(0), true);
             }else{
                 for(Symbol name : superclasses){
                     if(name.name.equals("text-update")){
@@ -121,7 +134,7 @@ public class SpecGenerator{
                         SlotDef def = new SlotDef(CL.intern("target"), CL.intern("string"), false);
                         slots.put(def.name, def);
                     }else{
-                        superClass = toCamelCase(name);
+                        superClass = toCamelCase(name, true);
                     }
                 }
             }
@@ -129,7 +142,7 @@ public class SpecGenerator{
 
         void emit(File base) throws java.io.IOException{
             normalize();
-            String className = toCamelCase(name);
+            String className = toCamelCase(name, true);
             File file = new File(base, className+".java");
             FileWriter writer = new FileWriter(file);
             writer.write(String.format("// File has been auto-generated."));
@@ -140,12 +153,14 @@ public class SpecGenerator{
             writer.write(String.format("\npublic class %s extends %s{", className, superClass));
             writer.write(String.format("\n    public static final Symbol className;"));
             writer.write(String.format("\n    static{"));
-            writer.write(String.format("\n        className = CL.intern(\"%s\", \"%s\");", name.name, name.pkg));
+            writer.write(String.format("\n        className = CL.intern(\"%s\", \"%s\");", name.name, name.pkg.name));
             writer.write(String.format("\n        CL.registerClass(className, %s.class);", className));
             writer.write(String.format("\n    }"));
+            writer.write(String.format("\n"));
             for(SlotDef slot : slots.values()){
                 writer.write(String.format("\n    %s", slot.declaration()));
             }
+            writer.write(String.format("\n"));
             writer.write(String.format("\n    public %s(Map<String, Object> initargs){", className));
             writer.write(String.format("\n        super(initargs);", className));
             for(SlotDef slot : slots.values()){
@@ -168,6 +183,7 @@ public class SpecGenerator{
 
         Recursive<Consumer<List<Object>>> handleDef = new Recursive<>();
         handleDef.func = expr -> {
+            System.out.println(expr+"");
             String deftype = ((Symbol)expr.get(0)).name;
             if(deftype.equals("define-package")){
                 String name = (String)expr.get(1);
@@ -218,10 +234,10 @@ public class SpecGenerator{
         for(ClassDef cls : classes.values()){
             writer.write(String.format("\n        "));
             writer.write(String.format("\n        CL.registerClass(CL.intern(\"%s\", \"%s\"), %s.class);",
-                                       cls.name.name, cls.name.pkg, toCamelCase(cls.name)));
+                                       cls.name.name, cls.name.pkg.name, toCamelCase(cls.name, true)));
             for(SlotDef def : cls.slots.values()){
                 writer.write(String.format("\n        CL.intern(\"%s\", \"%s\");",
-                                           def.name.name, def.name.pkg));
+                                           def.name.name, def.name.pkg.name));
             }
         }
         writer.write(String.format("\n    }"));
