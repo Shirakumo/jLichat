@@ -106,11 +106,11 @@ public class Client extends HandlerAdapter implements Runnable{
     public Update construct(String className, Object... initargs){
         Symbol name = CL.findSymbol(className);
         if(name == null) throw new NoSuchClass(CL.makeSymbol(className));
-        construct(name, initargs);
+        return construct(name, initargs);
     }
 
     public Update construct(Symbol className, Object... initargs){
-        return construct(CL.findClass(name), initargs);
+        return construct(CL.findClass(className), initargs);
     }
 
     public Update construct(Class<? extends StandardObject> cls, Object... initargs){

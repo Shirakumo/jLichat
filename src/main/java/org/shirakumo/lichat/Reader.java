@@ -160,7 +160,7 @@ public class Reader{
         }
     }
 
-    private Object readSexpr(){
+    public Object readSexpr(){
         skipWhitespace();
         int c = stream.read();
         switch(c){

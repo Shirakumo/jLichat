@@ -7,90 +7,20 @@ import java.io.IOException;
 import java.util.*;
 
 public class CL{
-    private static final Map<String, Package> packages;
-    private static final Map<Symbol, Class<? extends StandardObject>> classes;
-    private static final Map<Class<? extends StandardObject>, Symbol> classNames;
+    private static final Map<String, Package> packages = new HashMap<String, Package>();
+    private static final Map<Symbol, Class<? extends StandardObject>> classes = new HashMap<Symbol, Class<? extends StandardObject>>();
+    private static final Map<Class<? extends StandardObject>, Symbol> classNames = new HashMap<Class<? extends StandardObject>, Symbol>();
     public static Package PACKAGE;
 
     static{
-        packages = new HashMap<String, Package>();
-        classes = new HashMap<Symbol, Class<? extends StandardObject>>();
-        classNames = new HashMap<Class<? extends StandardObject>, Symbol>();
         PACKAGE = makePackage("lichat");
         makePackage("keyword");
 
-        for(String name : new String[]{"ID","CLOCK","FROM","PASSWORD","VERSION","EXTENSIONS","CHANNEL","TARGET","TEXT","PERMISSIONS","USERS","CHANNELS","REGISTERED","CONNECTIONS","UPDATE-ID","COMPATIBLE-VERSIONS","CONTENT-TYPE","FILENAME","PAYLOAD","ALLOWED-CONTENT-TYPES", "BY", "KEY", "RULE", "KEYS", "UPDATE", "UPDATES", "ATTRIBUTES", "IP", "MASK"}){
-            intern(name, "KEYWORD");
-        }
-
         for(String name : new String[]{"NIL","T", "AND", "OR", "NOT", "+", "-"}){
-            intern(name, "LICHAT");
+            intern(name);
         }
 
-        // Java doesn't execute the static blocks in the classes, so they
-        // can't register themselves. THANKS A LOT, IDIOTS
-        registerClass(intern("ALREADY-IN-CHANNEL"), AlreadyInChannel.class);
-        registerClass(intern("BACKFILL"), Backfill.class);
-        registerClass(intern("BAD-CONTENT-TYPE"), BadContentType.class);
-        registerClass(intern("BAD-NAME"), BadName.class);
-        registerClass(intern("BAN"), Ban.class);
-        registerClass(intern("CAPABILITIES"), Capabilities.class);
-        registerClass(intern("CHANNEL-UPDATE"), ChannelUpdate.class);
-        registerClass(intern("CHANNEL-INFO"), ChannelInfo.class);
-        registerClass(intern("CHANNELNAME-TAKEN"), ChannelnameTaken.class);
-        registerClass(intern("CHANNELS"), Channels.class);
-        registerClass(intern("CONNECT"), Connect.class);
-        registerClass(intern("CONNECTION-UNSTABLE"), ConnectionUnstable.class);
-        registerClass(intern("CONNECTION-LOST"), ConnectionLost.class);
-        registerClass(intern("CREATE"), Create.class);
-        registerClass(intern("DATA"), Data.class);
-        registerClass(intern("DENY"), Deny.class);
-        registerClass(intern("DESTROY"), Destroy.class);
-        registerClass(intern("DISCONNECT"), Disconnect.class);
-        registerClass(intern("EDIT"), Edit.class);
-        registerClass(intern("EMOTE"), Emote.class);
-        registerClass(intern("EMOTES"), Emotes.class);
-        registerClass(intern("FAILURE"), Failure.class);
-        registerClass(intern("GRANT"), Grant.class);
-        registerClass(intern("INCOMPATIBLE-VERSION"), IncompatibleVersion.class);
-        registerClass(intern("INSUFFICIENT-PERMISSIONS"), InsufficientPermissions.class);
-        registerClass(intern("INVALID-PASSWORD"), InvalidPassword.class);
-        registerClass(intern("INVALID-PERMISSIONS"), InvalidPermissions.class);
-        registerClass(intern("INVALID-UPDATE"), InvalidUpdate.class);
-        registerClass(intern("IP-BAN"), IpBan.class);
-        registerClass(intern("IP-UNBAN"), IpUnban.class);
-        registerClass(intern("JOIN"), Join.class);
-        registerClass(intern("KICK"), Kick.class);
-        registerClass(intern("KILL"), Kill.class);
-        registerClass(intern("LEAVE"), Leave.class);
-        registerClass(intern("MALFORMED-UPDATE"), MalformedUpdate.class);
-        registerClass(intern("MESSAGE"), Message.class);
-        registerClass(intern("NO-SUCH-CHANNEL"), NoSuchChannel.class);
-        registerClass(intern("NO-SUCH-PROFILE"), NoSuchProfile.class);
-        registerClass(intern("NO-SUCH-USER"), NoSuchUser.class);
-        registerClass(intern("NOT-IN-CHANNEL"), NotInChannel.class);
-        registerClass(intern("PAUSE"), Pause.class);
-        registerClass(intern("PERMISSIONS"), Permissions.class);
-        registerClass(intern("PING"), Ping.class);
-        registerClass(intern("PONG"), Pong.class);
-        registerClass(intern("PULL"), Pull.class);
-        registerClass(intern("QUIET"), Quiet.class);
-        registerClass(intern("REGISTER"), Register.class);
-        registerClass(intern("SERVER-INFO"), ServerInfo.class);
-        registerClass(intern("SET-CHANNEL-INFO"), SetChannelInfo.class);
-        registerClass(intern("TARGET-UPDATE"), TargetUpdate.class);
-        registerClass(intern("TEXT-UPDATE"), TextUpdate.class);
-        registerClass(intern("TOO-MANY-CONNECTIONS"), TooManyConnections.class);
-        registerClass(intern("TOO-MANY-UPDATES"), TooManyUpdates.class);
-        registerClass(intern("UNBAN"), Unban.class);
-        registerClass(intern("UNQUIET"), Unquiet.class);
-        registerClass(intern("UPDATE"), Update.class);
-        registerClass(intern("UPDATE-FAILURE"), UpdateFailure.class);
-        registerClass(intern("UPDATE-TOO-LONG"), UpdateTooLong.class);
-        registerClass(intern("USER-INFO"), UserInfo.class);
-        registerClass(intern("USERNAME-MISMATCH"), UsernameMismatch.class);
-        registerClass(intern("USERNAME-TAKEN"), UsernameTaken.class);
-        registerClass(intern("USERS"), Users.class);
+        Init.init();
     }
 
     public static Symbol makeSymbol(String name){
@@ -106,7 +36,7 @@ public class CL{
     }
 
     public static Symbol intern(String name, String pkg){
-        return packages.get(pkg).intern(name);
+        return findPackage(pkg).intern(name);
     }
 
     public static Symbol findSymbol(String name){
@@ -118,7 +48,7 @@ public class CL{
     }
 
     public static Symbol findSymbol(String name, String pkg){
-        return packages.get(pkg).intern(name);
+        return findPackage(pkg).intern(name);
     }
 
     public static Package findPackage(String name){
