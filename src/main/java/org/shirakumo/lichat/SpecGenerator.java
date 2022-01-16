@@ -46,7 +46,7 @@ public class SpecGenerator{
         
         String typeName(Object type){
             if(type instanceof List){
-                return String.format("List<%s>", typeName(((List<Object>)type).get(0)));
+                return String.format("List<%s>", typeName(((List<Object>)type).get(1)));
             }else if(type instanceof Symbol){
                 String kind = ((Symbol)type).name;
                 if(kind.equals("number"))           return "Number";
@@ -69,7 +69,7 @@ public class SpecGenerator{
 
         String defaultValue(Object type){
             if(type instanceof List){
-                return String.format("new ArrayList<%s>()", typeName(((List<Object>)type).get(0)));
+                return String.format("new ArrayList<%s>()", typeName(((List<Object>)type).get(1)));
             }else if(type instanceof Symbol){
                 String kind = ((Symbol)type).name;
                 if(kind.equals("number"))           return "0";

@@ -51,7 +51,7 @@ public class Client extends HandlerAdapter implements Runnable{
 
     public void connect(){
         if(isConnected())
-            throw new AlreadyConnected();
+            throw new org.shirakumo.lichat.conditions.AlreadyConnected();
         thread = new Thread(this);
         thread.start();
     }
