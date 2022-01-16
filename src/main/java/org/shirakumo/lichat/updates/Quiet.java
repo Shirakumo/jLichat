@@ -1,3 +1,4 @@
+// File has been auto-generated.
 package org.shirakumo.lichat.updates;
 import org.shirakumo.lichat.*;
 import java.util.*;
@@ -5,14 +6,14 @@ import java.util.*;
 public class Quiet extends ChannelUpdate{
     public static final Symbol className;
     static{
-        className = CL.intern("QUIET");
+        className = CL.intern("quiet", "shirakumo");
         CL.registerClass(className, Quiet.class);
     }
 
-    public final String target;
+    public String target = null;
 
     public Quiet(Map<String, Object> initargs){
         super(initargs);
-        target = (String)CL.requiredArg(initargs, "target");
+        target = (String)CL.arg(initargs, "target");
     }
 }

@@ -1,3 +1,4 @@
+// File has been auto-generated.
 package org.shirakumo.lichat.updates;
 import org.shirakumo.lichat.*;
 import java.util.*;
@@ -5,16 +6,18 @@ import java.util.*;
 public class UserInfo extends TargetUpdate{
     public static final Symbol className;
     static{
-        className = CL.intern("USER-INFO");
+        className = CL.intern("user-info", "lichat");
         CL.registerClass(className, UserInfo.class);
     }
 
-    public final boolean registered;
-    public final int connections;
+    public boolean registered = false;
+    public long connections = 0;
+    public List<Object> info = new ArrayList<Object>();
 
     public UserInfo(Map<String, Object> initargs){
         super(initargs);
-        registered = ((Symbol)CL.requiredArg(initargs, "registered")) == CL.findSymbol("T");
-        connections = (Integer)CL.requiredArg(initargs, "connections");
+        registered = (boolean)CL.arg(initargs, "registered");
+        connections = (long)CL.arg(initargs, "connections");
+        info = (List<Object>)CL.arg(initargs, "info");
     }
 }

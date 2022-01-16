@@ -1,3 +1,4 @@
+// File has been auto-generated.
 package org.shirakumo.lichat.updates;
 import org.shirakumo.lichat.*;
 import java.util.*;
@@ -5,12 +6,12 @@ import java.util.*;
 public class IpUnban extends Update{
     public static final Symbol className;
     static{
-        className = CL.intern("IP-UNBAN");
+        className = CL.intern("ip-unban", "shirakumo");
         CL.registerClass(className, IpUnban.class);
     }
 
-    public final String ip;
-    public final String mask;
+    public String ip = null;
+    public String mask = null;
 
     public IpUnban(Map<String, Object> initargs){
         super(initargs);

@@ -1,3 +1,4 @@
+// File has been auto-generated.
 package org.shirakumo.lichat.updates;
 import org.shirakumo.lichat.*;
 import java.util.*;
@@ -5,14 +6,14 @@ import java.util.*;
 public class IncompatibleVersion extends UpdateFailure{
     public static final Symbol className;
     static{
-        className = CL.intern("INCOMPATIBLE-VERSION");
+        className = CL.intern("incompatible-version", "lichat");
         CL.registerClass(className, IncompatibleVersion.class);
     }
 
-    public final List<String> compatibleVersions = new ArrayList<String>();
+    public List<String> compatibleVersions = new ArrayList<String>();
 
     public IncompatibleVersion(Map<String, Object> initargs){
         super(initargs);
-        compatibleVersions.addAll((List<String>)CL.requiredArg(initargs, "compatible-versions"));
+        compatibleVersions = (List<String>)CL.requiredArg(initargs, "compatible-versions");
     }
 }

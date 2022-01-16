@@ -1,3 +1,4 @@
+// File has been auto-generated.
 package org.shirakumo.lichat.updates;
 import org.shirakumo.lichat.*;
 import java.util.*;
@@ -5,16 +6,16 @@ import java.util.*;
 public class Grant extends ChannelUpdate{
     public static final Symbol className;
     static{
-        className = CL.intern("GRANT");
+        className = CL.intern("grant", "lichat");
         CL.registerClass(className, Grant.class);
     }
 
-    public final String target;
-    public final Symbol update;
+    public Symbol update = null;
+    public String target = null;
 
     public Grant(Map<String, Object> initargs){
         super(initargs);
-        target = (String)CL.requiredArg(initargs, "target");
         update = (Symbol)CL.requiredArg(initargs, "update");
+        target = (String)CL.arg(initargs, "target");
     }
 }
