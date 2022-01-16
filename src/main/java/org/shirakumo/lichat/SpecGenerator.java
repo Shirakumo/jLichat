@@ -62,7 +62,7 @@ public class SpecGenerator{
                 else if(kind.equals("username"))    return "String";
                 else if(kind.equals("channelname")) return "String";
                 else if(kind.equals("password"))    return "String";
-                else if(kind.equals("object"))      return "Object";
+                else if(kind.equals("object"))      return "StandardObject";
             }
             return "Object";
         }
@@ -91,7 +91,7 @@ public class SpecGenerator{
         }
         
         String declaration(){
-            return String.format("public final %s %s = %s;", typeName(type), toCamelCase(name, false), defaultValue(type));
+            return String.format("public %s %s = %s;", typeName(type), toCamelCase(name, false), defaultValue(type));
         }
 
         String initializer(){
@@ -122,7 +122,7 @@ public class SpecGenerator{
 
         void normalize(){
             if(superclasses.size() == 0){
-                superClass = "Update";
+                superClass = "StandardObject";
             }else if(superclasses.size() == 1){
                 superClass = toCamelCase(superclasses.get(0), true);
             }else{
@@ -167,7 +167,7 @@ public class SpecGenerator{
                 writer.write(String.format("\n        %s", slot.initializer()));
             }
             writer.write(String.format("\n    }"));
-            writer.write(String.format("\n}"));
+            writer.write(String.format("\n}\n"));
             writer.close();
         }
     }

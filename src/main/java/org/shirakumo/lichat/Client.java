@@ -26,14 +26,14 @@ public class Client extends HandlerAdapter implements Runnable{
     public final Map<String,Payload> emotes = new HashMap<String,Payload>();
     
     private final List<Handler> handlers = new java.util.concurrent.CopyOnWriteArrayList<Handler>();
-    private final Map<Integer, List<Handler>> callbacks = new HashMap<Integer, List<Handler>>();
+    private final Map<Long, List<Handler>> callbacks = new HashMap<Long, List<Handler>>();
     private final Queue<Object> sendQueue = new ConcurrentLinkedQueue<Object>();
     private Socket socket;
     private Reader reader;
     private Printer printer;
     private Thread thread;
     private long lastReceived = 0;
-    private int IdCounter = 0;
+    private long IdCounter = 0;
     
     public Client(){
     }
@@ -128,7 +128,7 @@ public class Client extends HandlerAdapter implements Runnable{
         return (Update)CL.makeInstance(cls, argmap);
     }
     
-    public int nextId(){
+    public long nextId(){
         return IdCounter++;
     }
 
@@ -192,9 +192,7 @@ public class Client extends HandlerAdapter implements Runnable{
 
     // FIXME: Some kind of way to notify of exceptions that we just ignore in here.
     public void process(Update update){
-        int id = -1;
-        if(update.id instanceof Integer) id = (Integer)update.id;
-        if(update.id instanceof Long) id = (int)((long)((Long)update.id));
+        long id = update.id;
         if(id != -1){
             List<Handler> cbs = callbacks.get(id);
             if(cbs != null){
@@ -242,13 +240,13 @@ public class Client extends HandlerAdapter implements Runnable{
         emotes.put(update.name.toLowerCase(), new Payload(update));
     }
 
-    public void addCallback(int id, Handler callback){
+    public void addCallback(long id, Handler callback){
         if(callbacks.get(id) == null)
             callbacks.put(id, new ArrayList<Handler>());
         callbacks.get(id).add(callback);
     }
 
-    public void removeCallback(int id){
+    public void removeCallback(long id){
         callbacks.remove(id);
     }
 

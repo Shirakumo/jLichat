@@ -10,13 +10,13 @@ public class Update extends StandardObject{
     }
 
     public final long clock;
-    public final Object id;
+    public final long id;
     public String from;
 
     public Update(Map<String, Object> initargs){
         super(initargs);
         clock = (Long)CL.arg(initargs, "clock", CL.getUniversalTime());
-        id = (Object)CL.requiredArg(initargs, "id");
+        id = (Long)CL.requiredArg(initargs, "id");
         from = (String)CL.arg(initargs, "from");
     }
 
